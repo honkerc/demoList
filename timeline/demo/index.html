@@ -221,7 +221,11 @@
             box-shadow: 0 6px 24px rgba(76, 183, 130, 0.3);
         }
 
-        /* ===== Time Picker (Fullscreen Minimal Caliper) ===== */
+        /* ===== Time Picker (Two-part layout) ===== */
+        :root {
+            --picker-accent: rgb(221, 129, 77);
+        }
+
         .time-picker-overlay {
             position: fixed;
             top: 0;
@@ -248,14 +252,42 @@
             flex: 1;
             display: flex;
             flex-direction: column;
-            align-items: center;
-            justify-content: center;
             max-width: 420px;
             width: 100%;
             position: relative;
         }
 
-        /* Caliper ruler - full height, centered */
+        /* ===== Top half: number display ===== */
+        .picker-top {
+            flex: 1;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 20px;
+        }
+
+        .picker-number {
+            font-size: 96px;
+            font-weight: 900;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            color: var(--picker-accent);
+            line-height: 1;
+            text-align: center;
+        }
+
+        /* ===== Bottom half: ruler + button ===== */
+        .picker-bottom {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            width: 100%;
+            position: relative;
+        }
+
         .picker-ruler-wrap {
             flex: 1;
             display: flex;
@@ -271,22 +303,19 @@
             -ms-touch-action: pan-x;
         }
 
-        /* Selected time above the center tick */
-        .picker-selected {
+        /* Center reference line - long tick as selection baseline */
+        .picker-center-line {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            font-size: 80px;
-            font-weight: 900;
-            font-family: inherit;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 4px;
-            color: var(--accent);
-            line-height: 1;
-            z-index: 30;
+            width: 3px;
+            height: 100px;
+            background: var(--picker-accent);
+            border-radius: 999px;
+            z-index: 15;
             pointer-events: none;
-            text-align: center;
+            box-shadow: 0 0 12px rgba(221, 129, 77, 0.3);
         }
 
         /* Edge fade masks */
@@ -313,8 +342,8 @@
 
         .picker-ruler {
             display: flex;
-            align-items: flex-start;
-            height: 160px;
+            align-items: center;
+            height: 120px;
             padding: 0 calc(50% - 20px);
             overflow-x: auto;
             overflow-y: hidden;
@@ -338,14 +367,13 @@
             scroll-snap-align: center;
             transition: all 0.15s;
             border-radius: 999px;
-            height: 50px;
-            align-self: flex-start;
+            height: 40px;
         }
 
         .picker-ruler .tick.major {
             width: 6px;
             background: var(--text3);
-            height: 80px;
+            height: 60px;
         }
 
         /* Label below major tick */
@@ -363,17 +391,17 @@
             line-height: 1;
         }
 
-        /* Center selected tick - always fixed size, always blue */
+        /* Selected tick - orange, matches center line */
         .picker-ruler .tick.selected {
             width: 8px;
-            height: 120px;
-            background: var(--accent);
+            height: 80px;
+            background: var(--picker-accent);
             z-index: 10;
-            box-shadow: 0 0 20px rgba(91, 91, 214, 0.3);
+            box-shadow: 0 0 16px rgba(221, 129, 77, 0.3);
         }
 
         .picker-ruler .tick.selected .tick-label {
-            color: var(--accent);
+            color: var(--picker-accent);
             font-size: 15px;
             font-weight: 900;
         }
@@ -382,7 +410,7 @@
         .picker-confirm {
             padding: 14px 48px;
             border: none;
-            background: var(--accent);
+            background: var(--picker-accent);
             color: #fff;
             font-size: 18px;
             font-weight: 800;
@@ -390,9 +418,9 @@
             border-radius: 999px;
             cursor: pointer;
             transition: all 0.2s;
-            box-shadow: 0 6px 24px rgba(91, 91, 214, 0.3);
+            box-shadow: 0 6px 24px rgba(221, 129, 77, 0.3);
             letter-spacing: 0.5px;
-            margin-bottom: 12vh;
+            margin-bottom: 10vh;
         }
 
         .picker-confirm:active {
@@ -807,14 +835,21 @@
             </div>
         </div>
 
-        <!-- Time Picker (Fullscreen Minimal Caliper) -->
+        <!-- Time Picker (Two-part layout) -->
         <div class="time-picker-overlay" id="timePickerOverlay">
             <div class="time-picker" id="timePicker">
-                <div class="picker-ruler-wrap">
-                    <div class="picker-selected" id="pickerSelected">25</div>
-                    <div class="picker-ruler" id="pickerRuler"></div>
+                <!-- Top half: big number -->
+                <div class="picker-top">
+                    <div class="picker-number" id="pickerNumber">25</div>
                 </div>
-                <button class="picker-confirm" onclick="confirmTimePicker()">完成</button>
+                <!-- Bottom half: ruler + button -->
+                <div class="picker-bottom">
+                    <div class="picker-ruler-wrap">
+                        <div class="picker-center-line"></div>
+                        <div class="picker-ruler" id="pickerRuler"></div>
+                    </div>
+                    <button class="picker-confirm" onclick="confirmTimePicker()">完成</button>
+                </div>
             </div>
         </div>
 
@@ -907,7 +942,7 @@
                 const mins = parseInt(closest.dataset.minutes);
                 timerTotal = mins * 60;
                 timerRemain = timerTotal;
-                document.getElementById('pickerSelected').textContent = mins;
+                document.getElementById('pickerNumber').textContent = mins;
             }
         }
 
