@@ -219,192 +219,6 @@
             font-weight: 600
         }
 
-        /* ===== Timeline (hourly bars, like index) ===== */
-        .tl-section {
-            margin-bottom: 16px
-        }
-
-        .tl-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 14px
-        }
-
-        .tl-header .tl-title {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text3);
-            letter-spacing: 1px;
-            text-transform: uppercase
-        }
-
-        .tl-header .tl-toggle {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: var(--card);
-            border: 1px solid var(--line);
-            padding: 5px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text3);
-            cursor: pointer;
-            font-family: inherit;
-            border-radius: 999px;
-            transition: all .2s
-        }
-
-        .tl-header .tl-toggle:hover {
-            border-color: var(--accent);
-            color: var(--accent)
-        }
-
-        .tl-header .tl-toggle .dot {
-            width: 5px;
-            height: 5px;
-            border-radius: 50%;
-            background: var(--text3);
-            transition: all .2s
-        }
-
-        .tl-header .tl-toggle.on .dot {
-            background: var(--accent)
-        }
-
-        .tl-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 2px
-        }
-
-        .tl-row {
-            display: flex;
-            align-items: stretch;
-            gap: 0;
-            min-height: 36px
-        }
-
-        .tl-row.hide {
-            display: none
-        }
-
-        .tl-row .tl-label {
-            width: 44px;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text3);
-            text-align: right;
-            padding: 8px 10px 8px 0;
-            flex-shrink: 0;
-            align-self: flex-start;
-            line-height: 20px;
-            font-variant-numeric: tabular-nums
-        }
-
-        .tl-row .tl-bar {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            padding: 6px 0;
-            min-height: 24px
-        }
-
-        .tl-row .tl-track {
-            display: flex;
-            width: 100%;
-            height: 24px;
-            background: var(--soft);
-            border-radius: 6px;
-            overflow: hidden;
-            position: relative
-        }
-
-        .tl-row .tl-track .seg {
-            height: 100%;
-            cursor: pointer;
-            position: relative;
-            transition: all .25s;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 3px
-        }
-
-        .tl-row .tl-track .seg:first-child {
-            border-radius: 6px 0 0 6px
-        }
-
-        .tl-row .tl-track .seg:last-child {
-            border-radius: 0 6px 6px 0
-        }
-
-        .tl-row .tl-track .seg:only-child {
-            border-radius: 6px
-        }
-
-        .tl-row .tl-track .seg:hover {
-            filter: brightness(1.1);
-            z-index: 2
-        }
-
-        .tl-row .tl-track .seg .t {
-            font-size: 10px;
-            font-weight: 700;
-            color: #fff;
-            white-space: nowrap;
-            pointer-events: none;
-            text-shadow: 0 1px 3px rgba(0, 0, 0, .25)
-        }
-
-        .tl-row .tl-track .seg .tip {
-            display: none;
-            position: absolute;
-            bottom: calc(100% + 8px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card);
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            padding: 6px 12px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-            color: var(--text);
-            z-index: 10;
-            pointer-events: none;
-            box-shadow: var(--shadow-lg)
-        }
-
-        .tl-row .tl-track .seg:hover .tip {
-            display: block
-        }
-
-        .tl-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 14px;
-            padding-top: 12px;
-            border-top: 1px solid var(--line)
-        }
-
-        .tl-legend span {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text2)
-        }
-
-        .tl-legend span .d {
-            width: 8px;
-            height: 8px;
-            border-radius: 4px;
-            flex-shrink: 0
-        }
-
         /* ===== Record Cards ===== */
         .rc-section {
             margin-top: 20px
@@ -618,15 +432,6 @@
                     <div class="label">利用率</div>
                 </div>
             </div>
-            <div class="tl-section">
-                <div class="tl-header">
-                    <span class="tl-title">今日时间轴</span>
-                    <button class="tl-toggle on" id="toggleEmptyBtn" onclick="toggleEmptyHours()">
-                        <span class="dot"></span> 空白
-                    </button>
-                </div>
-                <div class="tl-grid" id="hourlyTimeline"></div>
-            </div>
             <div class="rc-section">
                 <div class="rc-header">记录详情</div>
                 <div class="rc-list" id="recordCards"></div>
@@ -643,8 +448,8 @@
     <script>
         (function () { const s = localStorage.getItem('timeline_theme'); const d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches; if (d) document.documentElement.classList.add('dark') })();
         let currentDate = new Date();
-        let showEmpty = true;
         function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]') }
+        function saveRecords(r) { localStorage.setItem('timeline_records', JSON.stringify(r)) }
         function fmt(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm' }
         function cc(cat) {
             const m = {
@@ -661,14 +466,6 @@
             };
             return m[cat] || 'var(--text3)';
         }
-        function pm(t) { const [h, m] = (t || '00:00').split(':').map(Number); return h * 60 + m }
-        function toggleEmptyHours() {
-            showEmpty = !showEmpty;
-            const btn = document.getElementById('toggleEmptyBtn');
-            btn.classList.toggle('on');
-            btn.innerHTML = '<span class="dot"></span>' + (showEmpty ? '空白' : '隐藏');
-            renderTimeline();
-        }
 
         function renderTimeline() {
             const records = getRecords();
@@ -679,47 +476,6 @@
             document.getElementById('sumTotal').textContent = fmt(totalSec);
             document.getElementById('sumCount').textContent = dr.length;
             document.getElementById('sumRate').textContent = rate + '%';
-
-            const c = document.getElementById('hourlyTimeline');
-            const sh = 6, eh = 23;
-            let html = '';
-            for (let h = sh; h < eh; h++) {
-                const hs = h * 60, he = (h + 1) * 60;
-                const ov = dr.filter(r => { const rs = pm(r.start), re = pm(r.end); return rs < he && re > hs });
-                const empty = ov.length === 0;
-                const hc = (!showEmpty && empty) ? ' hide' : '';
-                html += '<div class="tl-row' + hc + '">';
-                html += '<span class="tl-label">' + h + ':00</span>';
-                html += '<div class="tl-bar">';
-                const segs = [];
-                ov.forEach(r => {
-                    const rs = Math.max(pm(r.start), hs); const re = Math.min(pm(r.end), he);
-                    if (re > rs) { segs.push({ start: rs, end: re, name: r.name, category: r.category }); }
-                });
-                segs.sort((a, b) => a.start - b.start);
-                html += '<div class="tl-track">';
-                segs.forEach(s => {
-                    const w = ((s.end - s.start) / 60) * 100;
-                    const durStr = fmt((s.end - s.start) * 60);
-                    html += '<div class="seg" style="width:' + w + '%;background:' + cc(s.category) + ';">';
-                    html += '<span class="t">' + durStr + '</span>';
-                    html += '<span class="tip">' + s.name + ' · ' + durStr + '</span></div>';
-                });
-                html += '</div></div></div>';
-            }
-            if (dr.length === 0) {
-                html = '<div class="empty-state"><p>' + dateStr + ' 暂无记录</p></div>';
-                c.innerHTML = html;
-                renderRecordCards(dr);
-                return;
-            }
-            let leg = '';
-            const usedNames = new Set();
-            dr.forEach(r => usedNames.add(r.name));
-            Array.from(usedNames).sort().forEach(name => {
-                leg += '<span><span class="d" style="background:' + cc(name) + ';"></span>' + name + '</span>';
-            });
-            c.innerHTML = html + '<div class="tl-legend">' + leg + '</div>';
             renderRecordCards(dr);
         }
 
