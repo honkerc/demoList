@@ -280,7 +280,8 @@
             overflow: hidden;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: none;
+            touch-action: pan-x;
+            -ms-touch-action: pan-x;
         }
 
         /* Edge fade masks */
@@ -309,13 +310,14 @@
             display: flex;
             align-items: center;
             height: 160px;
-            padding: 0 50%;
+            padding: 0 calc(50% - 20px);
             overflow-x: auto;
             overflow-y: hidden;
             scroll-snap-type: x mandatory;
             -webkit-overflow-scrolling: touch;
             cursor: grab;
             scrollbar-width: none;
+            width: 100%;
         }
 
         .picker-ruler::-webkit-scrollbar {
@@ -340,9 +342,10 @@
             height: 90px;
         }
 
+        /* Label above tick */
         .picker-ruler .tick .tick-label {
             position: absolute;
-            top: calc(100% + 10px);
+            bottom: calc(100% + 8px);
             left: 50%;
             transform: translateX(-50%);
             font-size: 14px;
@@ -861,17 +864,16 @@
         function buildRuler() {
             const ruler = document.getElementById('pickerRuler');
             ruler.innerHTML = '';
-            // 5 min to 120 min, every 5 min = major tick, 1 min = minor tick
+            // 5 min to 120 min, every 1 min = tick, every 5 min = major tick
             for (let m = 5; m <= 120; m++) {
                 const tick = document.createElement('div');
                 tick.className = 'tick' + (m % 5 === 0 ? ' major' : ' minor');
                 tick.dataset.minutes = m;
-                if (m % 5 === 0) {
-                    const label = document.createElement('span');
-                    label.className = 'tick-label';
-                    label.textContent = m + 'm';
-                    tick.appendChild(label);
-                }
+                // Show number above every tick
+                const label = document.createElement('span');
+                label.className = 'tick-label';
+                label.textContent = m;
+                tick.appendChild(label);
                 ruler.appendChild(tick);
             }
             // Scroll to 25 min
