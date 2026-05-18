@@ -26,6 +26,14 @@
             --c6: #b877c9;
             --c7: #6bb5b5;
             --c8: #9a9aa6;
+            --c9: #f06292;
+            --c10: #7e57c2;
+            --c11: #26c6da;
+            --c12: #ff8a65;
+            --c13: #aed581;
+            --c14: #ffd54f;
+            --c15: #ef5350;
+            --c16: #78909c;
             --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
             --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
             --radius: 16px;
@@ -542,7 +550,21 @@
         function saveRecords(r) { localStorage.setItem('timeline_records', JSON.stringify(r)); }
         function getToday() { return new Date().toISOString().slice(0, 10); }
         function fmt(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm'; }
-        function cc(cat) { const m = { '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)', '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)' }; return m[cat] || 'var(--text3)'; }
+        function cc(cat) {
+            const m = {
+                '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)',
+                '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)',
+                '编码': 'var(--c1)', '会议': 'var(--c10)', '文档': 'var(--c16)',
+                '课程': 'var(--c2)', '练习': 'var(--c11)', '笔记': 'var(--c13)',
+                '书籍': 'var(--c3)', '文章': 'var(--c14)', '论文': 'var(--c13)',
+                '跑步': 'var(--c4)', '瑜伽': 'var(--c12)', '骑行': 'var(--c11)',
+                '写作': 'var(--c5)', '绘画': 'var(--c9)', '摄影': 'var(--c10)',
+                '聚会': 'var(--c6)', '电话': 'var(--c9)', '聊天': 'var(--c14)',
+                '午休': 'var(--c7)', '冥想': 'var(--c11)', '散步': 'var(--c13)',
+                '通勤': 'var(--c8)', '家务': 'var(--c12)', '杂事': 'var(--c16)'
+            };
+            return m[cat] || 'var(--text3)';
+        }
 
         let selMin = 25, showEmpty = true;
         document.querySelectorAll('.pills button').forEach(btn => {
@@ -616,8 +638,10 @@
                 html += '</div></div></div>';
             }
             let leg = '';
-            Array.from(used).sort().forEach(cat => {
-                leg += '<span><span class="d" style="background:' + cc(cat) + ';"></span>' + cat + '</span>';
+            const usedNames = new Set();
+            dr.forEach(r => usedNames.add(r.name));
+            Array.from(usedNames).sort().forEach(name => {
+                leg += '<span><span class="d" style="background:' + cc(name) + ';"></span>' + name + '</span>';
             });
             c.innerHTML = html + '<div class="tl-legend">' + leg + '</div>';
         }
