@@ -118,54 +118,18 @@
             margin-bottom: 32px;
         }
 
-        .timer-ring {
-            width: 240px;
-            height: 240px;
-            margin: 0 auto;
-            position: relative;
-        }
-
-        .timer-ring svg {
-            transform: rotate(-90deg);
-            width: 240px;
-            height: 240px;
-        }
-
-        .timer-ring .bg-circle {
-            fill: none;
-            stroke: rgba(0, 0, 0, 0.06);
-            stroke-width: 5;
-        }
-
-        .timer-ring .progress-circle {
-            fill: none;
-            stroke: var(--accent);
-            stroke-width: 5;
-            stroke-linecap: round;
-            stroke-dasharray: 690.8;
-            stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.5s ease;
-        }
-
-        .timer-ring .progress-circle.running {
-            stroke: var(--c3);
-        }
-
         .timer-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
             text-align: center;
         }
 
         .timer-display .time {
-            font-size: 64px;
+            font-size: 80px;
             font-weight: 900;
             font-variant-numeric: tabular-nums;
-            letter-spacing: 3px;
+            letter-spacing: 4px;
             color: var(--text);
             line-height: 1;
+            transition: color 0.3s;
         }
 
         .timer-display .time.running {
@@ -173,7 +137,14 @@
         }
 
         .timer-display .tag {
-            margin-top: 8px;
+            margin-top: 12px;
+            transition: all 0.3s;
+        }
+
+        .timer-display .tag.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(-8px);
         }
 
         .timer-display .tag .tag-btn {
@@ -223,6 +194,45 @@
         .focus-btn.done {
             background: var(--c3);
             box-shadow: 0 6px 24px rgba(76, 183, 130, 0.3);
+        }
+
+        .focus-btn.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(0.8);
+        }
+
+        /* ===== Abandon Button ===== */
+        .abandon-btn {
+            position: fixed;
+            bottom: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 13px;
+            font-weight: 700;
+            font-family: inherit;
+            color: var(--text3);
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 12px 24px;
+            border-radius: 999px;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.3s;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: manipulation;
+        }
+
+        .abandon-btn.show {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .abandon-btn:active {
+            color: var(--accent2);
+            background: rgba(232, 89, 110, 0.1);
         }
 
         /* ===== Page 2: Timeline ===== */
@@ -609,20 +619,15 @@
             <!-- Page 1: Focus Timer -->
             <div class="page page-punch">
                 <div class="timer-wrap">
-                    <div class="timer-ring">
-                        <svg viewBox="0 0 240 240">
-                            <circle class="bg-circle" cx="120" cy="120" r="110" />
-                            <circle class="progress-circle" id="progressCircle" cx="120" cy="120" r="110" />
-                        </svg>
-                        <div class="timer-display">
-                            <div class="time" id="timerDisplay">25:00</div>
-                            <div class="tag">
-                                <button class="tag-btn" id="tagBtn" onclick="openDrawer()">专注 ▾</button>
-                            </div>
+                    <div class="timer-display">
+                        <div class="time" id="timerDisplay">25:00</div>
+                        <div class="tag" id="tagWrap">
+                            <button class="tag-btn" id="tagBtn" onclick="openDrawer()">专注 ▾</button>
                         </div>
                     </div>
                 </div>
                 <button class="focus-btn" id="focusBtn" onclick="toggleFocus()">开始专注</button>
+                <button class="abandon-btn" id="abandonBtn">长按放弃专注</button>
             </div>
 
             <!-- Page 2: Timeline -->
@@ -763,11 +768,16 @@
         /* ===== Focus Timer ===== */
         function toggleFocus() {
             const btn = document.getElementById('focusBtn');
+            const tagWrap = document.getElementById('tagWrap');
+            const abandonBtn = document.getElementById('abandonBtn');
             if (timerRunning) {
                 clearInterval(timerInterval);
                 timerRunning = false;
                 btn.textContent = '开始专注';
                 btn.classList.remove('running');
+                btn.classList.remove('hide');
+                tagWrap.classList.remove('hide');
+                abandonBtn.classList.remove('show');
                 const elapsed = timerTotal - timerRemain;
                 if (elapsed >= 60) {
                     const now = new Date();
@@ -785,9 +795,9 @@
                 resetTimer();
             } else {
                 timerRunning = true;
-                btn.textContent = '结束专注';
-                btn.classList.add('running');
-                document.getElementById('progressCircle').classList.add('running');
+                btn.classList.add('hide');
+                tagWrap.classList.add('hide');
+                abandonBtn.classList.add('show');
                 document.getElementById('timerDisplay').classList.add('running');
                 timerInterval = setInterval(tick, 1000);
             }
@@ -800,10 +810,14 @@
                 clearInterval(timerInterval);
                 timerRunning = false;
                 const btn = document.getElementById('focusBtn');
+                const tagWrap = document.getElementById('tagWrap');
+                const abandonBtn = document.getElementById('abandonBtn');
                 btn.textContent = '✓ 已完成';
                 btn.classList.remove('running');
                 btn.classList.add('done');
-                document.getElementById('progressCircle').classList.remove('running');
+                btn.classList.remove('hide');
+                tagWrap.classList.remove('hide');
+                abandonBtn.classList.remove('show');
                 document.getElementById('timerDisplay').classList.remove('running');
                 const now = new Date();
                 const ss = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
@@ -822,17 +836,52 @@
             const m = Math.floor(timerRemain / 60);
             const s = timerRemain % 60;
             document.getElementById('timerDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
-            const circumference = 2 * Math.PI * 110;
-            const progress = timerTotal > 0 ? (timerRemain / timerTotal) * circumference : 0;
-            document.getElementById('progressCircle').style.strokeDashoffset = progress;
         }
 
         function resetTimer() {
             timerRemain = timerTotal;
             document.getElementById('timerDisplay').textContent = '25:00';
             document.getElementById('timerDisplay').classList.remove('running');
-            document.getElementById('progressCircle').classList.remove('running');
-            document.getElementById('progressCircle').style.strokeDashoffset = 0;
+        }
+
+        /* ===== Long Press Abandon ===== */
+        (function () {
+            const abandonBtn = document.getElementById('abandonBtn');
+            let pressTimer = null;
+
+            function startPress(e) {
+                e.preventDefault();
+                pressTimer = setTimeout(function () {
+                    abandon();
+                }, 800);
+            }
+
+            function endPress(e) {
+                e.preventDefault();
+                if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
+            }
+
+            abandonBtn.addEventListener('mousedown', startPress);
+            abandonBtn.addEventListener('mouseup', endPress);
+            abandonBtn.addEventListener('mouseleave', endPress);
+            abandonBtn.addEventListener('touchstart', startPress, { passive: false });
+            abandonBtn.addEventListener('touchend', endPress, { passive: false });
+            abandonBtn.addEventListener('touchcancel', endPress, { passive: false });
+        })();
+
+        function abandon() {
+            if (!timerRunning) return;
+            clearInterval(timerInterval);
+            timerRunning = false;
+            const btn = document.getElementById('focusBtn');
+            const tagWrap = document.getElementById('tagWrap');
+            const abandonBtn = document.getElementById('abandonBtn');
+            btn.textContent = '开始专注';
+            btn.classList.remove('running', 'hide');
+            tagWrap.classList.remove('hide');
+            abandonBtn.classList.remove('show');
+            document.getElementById('timerDisplay').classList.remove('running');
+            resetTimer();
         }
 
         function toggleEmptyHours() {
