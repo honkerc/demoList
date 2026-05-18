@@ -469,6 +469,128 @@
             flex-shrink: 0
         }
 
+        /* ===== Record Cards ===== */
+        .rc-section {
+            margin-top: 20px
+        }
+
+        .rc-header {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin-bottom: 12px
+        }
+
+        .rc-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px
+        }
+
+        .rc-card {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            transition: all .2s;
+            cursor: pointer;
+            position: relative
+        }
+
+        .rc-card:hover {
+            border-color: var(--accent)
+        }
+
+        .rc-card .rc-bar {
+            width: 4px;
+            border-radius: 4px;
+            flex-shrink: 0
+        }
+
+        .rc-card .rc-body {
+            flex: 1;
+            min-width: 0
+        }
+
+        .rc-card .rc-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px
+        }
+
+        .rc-card .rc-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis
+        }
+
+        .rc-card .rc-dur {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text2);
+            font-variant-numeric: tabular-nums;
+            flex-shrink: 0
+        }
+
+        .rc-card .rc-bottom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px
+        }
+
+        .rc-card .rc-time {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            font-variant-numeric: tabular-nums
+        }
+
+        .rc-card .rc-cat {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 2px 10px;
+            border-radius: 999px;
+            color: #fff
+        }
+
+        .rc-card .rc-del {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: none;
+            background: var(--soft);
+            color: var(--text3);
+            font-size: 12px;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-family: inherit;
+            transition: all .2s
+        }
+
+        .rc-card:hover .rc-del {
+            display: flex
+        }
+
+        .rc-card .rc-del:hover {
+            background: var(--accent2);
+            color: #fff
+        }
+
         .empty-state {
             text-align: center;
             padding: 40px 20px
@@ -581,6 +703,10 @@
                 </div>
                 <div class="tl-grid" id="hourlyTimeline"></div>
             </div>
+            <div class="rc-section">
+                <div class="rc-header">记录详情</div>
+                <div class="rc-list" id="recordCards"></div>
+            </div>
         </div>
         <div class="nav">
             <a href="index.html">记录</a>
@@ -663,6 +789,7 @@
             if (dr.length === 0) {
                 html = '<div class="empty-state"><p>' + dateStr + ' 暂无记录</p></div>';
                 c.innerHTML = html;
+                renderRecordCards(dr);
                 return;
             }
             let leg = '';
@@ -672,6 +799,29 @@
                 leg += '<span><span class="d" style="background:' + cc(name) + ';"></span>' + name + '</span>';
             });
             c.innerHTML = html + '<div class="tl-legend">' + leg + '</div>';
+            renderRecordCards(dr);
+        }
+
+        function renderRecordCards(records) {
+            const container = document.getElementById('recordCards');
+            if (records.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>暂无记录</p></div>';
+                return;
+            }
+            let html = '';
+            records.forEach(r => {
+                const color = cc(r.category);
+                const catTag = '<span class="rc-cat" style="background:' + color + ';">' + r.category + '</span>';
+                html += '<div class="rc-card" onclick="deleteRecord(' + r.id + ')">';
+                html += '<div class="rc-bar" style="background:' + color + ';"></div>';
+                html += '<div class="rc-body">';
+                html += '<div class="rc-top"><span class="rc-name">' + r.name + '</span><span class="rc-dur">' + fmt(r.duration) + '</span></div>';
+                html += '<div class="rc-bottom"><span class="rc-time">' + (r.start || '--:--') + ' — ' + (r.end || '--:--') + '</span>' + catTag + '</div>';
+                html += '</div>';
+                html += '<button class="rc-del" onclick="event.stopPropagation();deleteRecord(' + r.id + ')">✕</button>';
+                html += '</div>';
+            });
+            container.innerHTML = html;
         }
 
         function deleteRecord(id) {
@@ -732,6 +882,47 @@
             renderTimeline();
             renderCalendar();
         }
+        function genTodayMock() {
+            const records = getRecords();
+            const today = new Date();
+            const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            const hasToday = records.some(r => r.date === todayStr);
+            if (hasToday) return;
+            const mockData = [
+                { name: '晨间冥想', cat: '休息', dur: 30, startH: 6, startM: 30 },
+                { name: '阅读', cat: '阅读', dur: 45, startH: 7, startM: 15 },
+                { name: '编码', cat: '工作', dur: 120, startH: 8, startM: 30 },
+                { name: '会议', cat: '工作', dur: 45, startH: 10, startM: 45 },
+                { name: '课程', cat: '学习', dur: 60, startH: 11, startM: 45 },
+                { name: '午休', cat: '休息', dur: 40, startH: 12, startM: 50 },
+                { name: '写作', cat: '创作', dur: 90, startH: 14, startM: 0 },
+                { name: '跑步', cat: '运动', dur: 35, startH: 15, startM: 45 },
+                { name: '笔记', cat: '学习', dur: 50, startH: 16, startM: 30 },
+                { name: '散步', cat: '休息', dur: 25, startH: 17, startM: 30 },
+                { name: '绘画', cat: '创作', dur: 60, startH: 19, startM: 0 },
+                { name: '阅读', cat: '阅读', dur: 40, startH: 20, startM: 15 },
+                { name: '冥想', cat: '休息', dur: 20, startH: 21, startM: 30 }
+            ];
+            const newRecords = [];
+            mockData.forEach((m, i) => {
+                const startMin = m.startH * 60 + m.startM;
+                const endMin = startMin + m.dur;
+                const sh = Math.floor(startMin / 60) % 24, sm = startMin % 60;
+                const eh = Math.floor(endMin / 60) % 24, em = endMin % 60;
+                newRecords.push({
+                    id: Date.now() + i,
+                    date: todayStr,
+                    start: String(sh).padStart(2, '0') + ':' + String(sm).padStart(2, '0'),
+                    end: String(eh).padStart(2, '0') + ':' + String(em).padStart(2, '0'),
+                    duration: m.dur * 60,
+                    category: m.cat,
+                    name: m.name,
+                    created_at: todayStr + 'T' + String(sh).padStart(2, '0') + ':' + String(sm).padStart(2, '0') + ':00'
+                });
+            });
+            saveRecords(records.concat(newRecords));
+        }
+        genTodayMock();
         updateDateLabel(); renderTimeline(); renderCalendar()
     </script>
 </body>
