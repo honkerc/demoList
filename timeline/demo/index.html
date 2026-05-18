@@ -120,15 +120,13 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding-top: 10vh;
-            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            padding-top: 0;
+            transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+            transform: translateY(8vh);
         }
 
         .timer-section.center {
-            flex: 1;
-            padding-top: 25vh;
-            justify-content: center;
-            align-items: center;
+            transform: translateY(18vh);
         }
 
         .timer-display .time {
@@ -1107,12 +1105,10 @@
                 if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
             }
 
-            abandonBtn.addEventListener('mousedown', startPress);
-            abandonBtn.addEventListener('mouseup', endPress);
-            abandonBtn.addEventListener('mouseleave', endPress);
-            abandonBtn.addEventListener('touchstart', startPress, { passive: true });
-            abandonBtn.addEventListener('touchend', endPress, { passive: true });
-            abandonBtn.addEventListener('touchcancel', endPress, { passive: true });
+            abandonBtn.addEventListener('pointerdown', startPress);
+            abandonBtn.addEventListener('pointerup', endPress);
+            abandonBtn.addEventListener('pointerleave', endPress);
+            abandonBtn.addEventListener('pointercancel', endPress);
         })();
 
         function abandon() {
