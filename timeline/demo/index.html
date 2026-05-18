@@ -318,28 +318,6 @@
             box-shadow: 0 0 12px rgba(221, 129, 77, 0.3);
         }
 
-        /* Edge fade masks */
-        .picker-ruler-wrap::before,
-        .picker-ruler-wrap::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            width: 60px;
-            height: 100%;
-            z-index: 20;
-            pointer-events: none;
-        }
-
-        .picker-ruler-wrap::before {
-            left: 0;
-            background: linear-gradient(to right, rgb(252, 239, 222), transparent);
-        }
-
-        .picker-ruler-wrap::after {
-            right: 0;
-            background: linear-gradient(to left, rgb(252, 239, 222), transparent);
-        }
-
         .picker-ruler {
             display: flex;
             align-items: center;
