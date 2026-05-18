@@ -120,7 +120,6 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
             padding-top: 10vh;
         }
 
@@ -135,6 +134,7 @@
             right: 0;
             bottom: 0;
             z-index: 10;
+            transition: none;
         }
 
         .timer-display .time {
@@ -144,7 +144,6 @@
             letter-spacing: 4px;
             color: var(--text);
             line-height: 1;
-            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .timer-display .time.running {
@@ -189,13 +188,10 @@
             align-items: center;
             justify-content: flex-start;
             padding-top: 4vh;
-            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .btn-section.hide {
-            opacity: 0;
-            pointer-events: none;
-            transform: translateY(20px);
+            display: none;
         }
 
         .focus-btn {
