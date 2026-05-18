@@ -126,15 +126,9 @@
 
         .timer-section.center {
             flex: 1;
-            padding-top: 0;
+            padding-top: 25vh;
             justify-content: center;
             align-items: center;
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 10;
         }
 
         .timer-display .time {
@@ -1104,23 +1098,21 @@
             let pressTimer = null;
 
             function startPress(e) {
-                e.preventDefault();
                 pressTimer = setTimeout(function () {
                     abandon();
                 }, 800);
             }
 
             function endPress(e) {
-                e.preventDefault();
                 if (pressTimer) { clearTimeout(pressTimer); pressTimer = null; }
             }
 
             abandonBtn.addEventListener('mousedown', startPress);
             abandonBtn.addEventListener('mouseup', endPress);
             abandonBtn.addEventListener('mouseleave', endPress);
-            abandonBtn.addEventListener('touchstart', startPress, { passive: false });
-            abandonBtn.addEventListener('touchend', endPress, { passive: false });
-            abandonBtn.addEventListener('touchcancel', endPress, { passive: false });
+            abandonBtn.addEventListener('touchstart', startPress, { passive: true });
+            abandonBtn.addEventListener('touchend', endPress, { passive: true });
+            abandonBtn.addEventListener('touchcancel', endPress, { passive: true });
         })();
 
         function abandon() {
