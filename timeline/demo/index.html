@@ -121,6 +121,7 @@
             justify-content: center;
             align-items: center;
             padding-top: 10vh;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .timer-section.center {
@@ -134,7 +135,6 @@
             right: 0;
             bottom: 0;
             z-index: 10;
-            transition: none;
         }
 
         .timer-display .time {
@@ -412,7 +412,6 @@
             transition: all 0.3s;
             user-select: none;
             -webkit-user-select: none;
-            touch-action: manipulation;
         }
 
         .abandon-btn.show {
