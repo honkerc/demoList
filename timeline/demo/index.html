@@ -255,19 +255,6 @@
             position: relative;
         }
 
-        /* Selected time display above ruler */
-        .picker-selected {
-            font-size: 80px;
-            font-weight: 900;
-            font-family: inherit;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 4px;
-            color: var(--accent);
-            line-height: 1;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
         /* Caliper ruler - full height, centered */
         .picker-ruler-wrap {
             flex: 1;
@@ -308,7 +295,7 @@
 
         .picker-ruler {
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             height: 160px;
             padding: 0 calc(50% - 20px);
             overflow-x: auto;
@@ -334,6 +321,7 @@
             transition: all 0.15s;
             border-radius: 999px;
             height: 50px;
+            align-self: flex-start;
         }
 
         .picker-ruler .tick.major {
@@ -370,6 +358,24 @@
             color: var(--accent);
             font-size: 15px;
             font-weight: 900;
+        }
+
+        /* Selected time above the center tick */
+        .picker-selected {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 80px;
+            font-weight: 900;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            color: var(--accent);
+            line-height: 1;
+            z-index: 30;
+            pointer-events: none;
+            text-align: center;
         }
 
         /* Bottom: confirm button */
@@ -901,9 +907,7 @@
                 const mins = parseInt(closest.dataset.minutes);
                 timerTotal = mins * 60;
                 timerRemain = timerTotal;
-                const m = Math.floor(timerTotal / 60);
-                const s = timerTotal % 60;
-                document.getElementById('pickerSelected').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+                document.getElementById('pickerSelected').textContent = mins;
             }
         }
 
