@@ -122,12 +122,54 @@
             display: none;
         }
 
-        /* ===== Record Form ===== */
+        /* ===== Record Form (full first screen) ===== */
+        .form-wrap {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding-bottom: 40px;
+            position: relative;
+        }
+
+        .form-wrap .scroll-hint {
+            position: absolute;
+            bottom: 8px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 2px;
+            color: var(--text3);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            opacity: 0.5;
+            animation: bob 2s ease-in-out infinite;
+        }
+
+        .form-wrap .scroll-hint .arrow {
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        @keyframes bob {
+
+            0%,
+            100% {
+                transform: translateX(-50%) translateY(0);
+            }
+
+            50% {
+                transform: translateX(-50%) translateY(4px);
+            }
+        }
+
         .form-card {
             background: var(--card);
             border-radius: var(--radius);
             padding: 20px;
-            margin: 24px 0;
             box-shadow: var(--shadow);
             border: 1px solid var(--line);
         }
@@ -496,31 +538,37 @@
             </div>
         </div>
         <div class="content">
-            <div class="form-card">
-                <div class="label">记录时长</div>
-                <div class="pills" id="pills">
-                    <button data-minutes="15">15m</button>
-                    <button data-minutes="25" class="on">25m</button>
-                    <button data-minutes="30">30m</button>
-                    <button data-minutes="45">45m</button>
-                    <button data-minutes="60">60m</button>
-                    <button data-minutes="90">90m</button>
-                    <button data-minutes="120">2h</button>
+            <div class="form-wrap">
+                <div class="form-card">
+                    <div class="label">记录时长</div>
+                    <div class="pills" id="pills">
+                        <button data-minutes="15">15m</button>
+                        <button data-minutes="25" class="on">25m</button>
+                        <button data-minutes="30">30m</button>
+                        <button data-minutes="45">45m</button>
+                        <button data-minutes="60">60m</button>
+                        <button data-minutes="90">90m</button>
+                        <button data-minutes="120">2h</button>
+                    </div>
+                    <div class="form-row">
+                        <input type="text" id="inputName" placeholder="活动名称" style="flex:2">
+                        <select id="inputCat" style="flex:1">
+                            <option value="工作">工作</option>
+                            <option value="学习">学习</option>
+                            <option value="阅读">阅读</option>
+                            <option value="运动">运动</option>
+                            <option value="创作">创作</option>
+                            <option value="社交">社交</option>
+                            <option value="休息">休息</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <button class="btn-record" id="recordBtn" onclick="submitRecord()">记录</button>
                 </div>
-                <div class="form-row">
-                    <input type="text" id="inputName" placeholder="活动名称" style="flex:2">
-                    <select id="inputCat" style="flex:1">
-                        <option value="工作">工作</option>
-                        <option value="学习">学习</option>
-                        <option value="阅读">阅读</option>
-                        <option value="运动">运动</option>
-                        <option value="创作">创作</option>
-                        <option value="社交">社交</option>
-                        <option value="休息">休息</option>
-                        <option value="其他">其他</option>
-                    </select>
+                <div class="scroll-hint">
+                    <span class="arrow">⌄</span>
+                    <span>滑动查看时间轴</span>
                 </div>
-                <button class="btn-record" id="recordBtn" onclick="submitRecord()">记录</button>
             </div>
 
             <div class="tl-section">
