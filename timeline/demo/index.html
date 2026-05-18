@@ -107,19 +107,27 @@
 
         /* ===== Page 1: Focus Timer ===== */
         .page-punch {
+            justify-content: flex-start;
+            align-items: center;
+            padding: 0 24px;
+            text-align: center;
+        }
+
+        /* Timer & Tag at ~1/3 position */
+        .timer-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 24px;
-            text-align: center;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+            padding-top: 10vh;
         }
 
-        .timer-wrap {
-            position: relative;
-            margin-bottom: 32px;
-        }
-
-        .timer-display {
-            text-align: center;
+        .timer-section.center {
+            flex: 2;
+            padding-top: 0;
+            justify-content: center;
         }
 
         .timer-display .time {
@@ -129,7 +137,7 @@
             letter-spacing: 4px;
             color: var(--text);
             line-height: 1;
-            transition: color 0.3s;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
         }
 
         .timer-display .time.running {
@@ -166,6 +174,23 @@
             color: var(--text2);
         }
 
+        /* Button at ~2/3 position */
+        .btn-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 4vh;
+            transition: all 0.5s cubic-bezier(0.25, 0.1, 0.25, 1);
+        }
+
+        .btn-section.hide {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px);
+        }
+
         .focus-btn {
             width: 160px;
             height: 54px;
@@ -180,7 +205,6 @@
             transition: all 0.3s;
             box-shadow: 0 6px 24px rgba(91, 91, 214, 0.3);
             letter-spacing: 0.5px;
-            margin-top: 60px;
         }
 
         .focus-btn:active {
@@ -197,10 +221,167 @@
             box-shadow: 0 6px 24px rgba(76, 183, 130, 0.3);
         }
 
-        .focus-btn.hide {
+        /* ===== Time Picker (Caliper Style) ===== */
+        .time-picker-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 200;
             opacity: 0;
             pointer-events: none;
-            transform: scale(0.8);
+            transition: opacity 0.3s;
+        }
+
+        .time-picker-overlay.open {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .time-picker {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            width: 100%;
+            max-width: 420px;
+            background: var(--card);
+            border-radius: 24px 24px 0 0;
+            z-index: 201;
+            padding: 20px 0 40px;
+            transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 -4px 32px rgba(0, 0, 0, 0.08);
+        }
+
+        .time-picker.open {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .time-picker .picker-handle {
+            width: 36px;
+            height: 4px;
+            border-radius: 4px;
+            background: var(--line);
+            margin: 0 auto 16px;
+        }
+
+        .time-picker .picker-title {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        /* Caliper ruler */
+        .picker-ruler-wrap {
+            position: relative;
+            overflow: hidden;
+            padding: 0 0 12px;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        .picker-ruler {
+            display: flex;
+            align-items: flex-end;
+            height: 80px;
+            padding: 0 50%;
+            overflow-x: auto;
+            overflow-y: hidden;
+            scroll-snap-type: x mandatory;
+            -webkit-overflow-scrolling: touch;
+            cursor: grab;
+            scrollbar-width: none;
+        }
+
+        .picker-ruler::-webkit-scrollbar {
+            display: none;
+        }
+
+        .picker-ruler .tick {
+            flex-shrink: 0;
+            width: 2px;
+            background: var(--line);
+            margin: 0 3px;
+            position: relative;
+            scroll-snap-align: center;
+            transition: all 0.15s;
+        }
+
+        .picker-ruler .tick.major {
+            width: 3px;
+            background: var(--text3);
+            height: 60px;
+        }
+
+        .picker-ruler .tick.minor {
+            height: 30px;
+        }
+
+        .picker-ruler .tick .tick-label {
+            position: absolute;
+            top: calc(100% + 6px);
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            white-space: nowrap;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .picker-ruler .tick.major .tick-label {
+            font-size: 12px;
+            color: var(--text2);
+        }
+
+        /* Center indicator (triangle pointer) */
+        .picker-indicator {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0;
+            height: 0;
+            border-left: 10px solid transparent;
+            border-right: 10px solid transparent;
+            border-top: 12px solid var(--accent);
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        .picker-value {
+            text-align: center;
+            font-size: 28px;
+            font-weight: 900;
+            color: var(--accent);
+            margin: 8px 0 16px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 1px;
+        }
+
+        .picker-confirm {
+            display: block;
+            margin: 0 auto;
+            padding: 12px 40px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 16px;
+            font-weight: 800;
+            font-family: inherit;
+            border-radius: 999px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 16px rgba(91, 91, 214, 0.25);
+        }
+
+        .picker-confirm:active {
+            transform: scale(0.95);
         }
 
         /* ===== Abandon Button ===== */
@@ -422,7 +603,7 @@
             flex-shrink: 0;
         }
 
-        /* ===== Bottom Drawer ===== */
+        /* ===== Bottom Drawer (Tags) ===== */
         .drawer-overlay {
             position: fixed;
             top: 0;
@@ -449,7 +630,7 @@
             width: 100%;
             max-width: 420px;
             background: var(--card);
-            border-radius: 20px 20px 0 0;
+            border-radius: 24px 24px 0 0;
             z-index: 201;
             padding: 20px 24px 40px;
             transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
@@ -479,23 +660,23 @@
         .drawer .drawer-options {
             display: grid;
             grid-template-columns: 1fr 1fr;
-            gap: 8px;
+            gap: 10px;
         }
 
         .drawer .drawer-options button {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             width: 100%;
-            padding: 14px 16px;
+            padding: 18px 20px;
             border: none;
             background: rgb(248, 244, 239);
-            font-size: 15px;
+            font-size: 16px;
             font-weight: 800;
             font-family: inherit;
             color: var(--text);
             cursor: pointer;
-            border-radius: 48px;
+            border-radius: 999px;
             transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
             text-align: left;
         }
@@ -505,9 +686,9 @@
         }
 
         .drawer .drawer-options button .d {
-            width: 12px;
-            height: 12px;
-            border-radius: 6px;
+            width: 14px;
+            height: 14px;
+            border-radius: 7px;
             flex-shrink: 0;
             transition: all 0.25s;
         }
@@ -585,15 +766,17 @@
         <div class="pages" id="pagesContainer">
             <!-- Page 1: Focus Timer -->
             <div class="page page-punch">
-                <div class="timer-wrap">
+                <div class="timer-section" id="timerSection">
                     <div class="timer-display">
-                        <div class="time" id="timerDisplay">25:00</div>
+                        <div class="time" id="timerDisplay" onclick="openTimePicker()">25:00</div>
                         <div class="tag" id="tagWrap">
                             <button class="tag-btn" id="tagBtn" onclick="openDrawer()">专注 ▾</button>
                         </div>
                     </div>
                 </div>
-                <button class="focus-btn" id="focusBtn" onclick="toggleFocus()">开始专注</button>
+                <div class="btn-section" id="btnSection">
+                    <button class="focus-btn" id="focusBtn" onclick="toggleFocus()">开始专注</button>
+                </div>
                 <button class="abandon-btn" id="abandonBtn">长按放弃专注</button>
             </div>
 
@@ -609,7 +792,20 @@
             </div>
         </div>
 
-        <!-- Bottom Drawer -->
+        <!-- Time Picker (Caliper Style) -->
+        <div class="time-picker-overlay" id="timePickerOverlay" onclick="closeTimePicker()"></div>
+        <div class="time-picker" id="timePicker">
+            <div class="picker-handle"></div>
+            <div class="picker-title">选择专注时长</div>
+            <div class="picker-ruler-wrap">
+                <div class="picker-indicator"></div>
+                <div class="picker-ruler" id="pickerRuler"></div>
+            </div>
+            <div class="picker-value" id="pickerValue">25:00</div>
+            <button class="picker-confirm" onclick="confirmTimePicker()">确定</button>
+        </div>
+
+        <!-- Bottom Drawer (Tags) -->
         <div class="drawer-overlay" id="drawerOverlay" onclick="closeDrawer()"></div>
         <div class="drawer" id="drawer">
             <div class="drawer-handle"></div>
@@ -652,6 +848,76 @@
         let showEmpty = true;
         let timerRunning = false, timerRemain = 25 * 60, timerTotal = 25 * 60, timerInterval = null;
         let currentTag = '专注';
+
+        /* ===== Time Picker (Caliper Style) ===== */
+        function buildRuler() {
+            const ruler = document.getElementById('pickerRuler');
+            ruler.innerHTML = '';
+            // 5 min to 120 min, every 5 min = major tick, 1 min = minor tick
+            for (let m = 5; m <= 120; m++) {
+                const tick = document.createElement('div');
+                tick.className = 'tick' + (m % 5 === 0 ? ' major' : ' minor');
+                tick.dataset.minutes = m;
+                if (m % 5 === 0) {
+                    const label = document.createElement('span');
+                    label.className = 'tick-label';
+                    label.textContent = m + 'm';
+                    tick.appendChild(label);
+                }
+                ruler.appendChild(tick);
+            }
+            // Scroll to 25 min
+            setTimeout(() => {
+                const ticks = ruler.querySelectorAll('.tick');
+                const target = ticks[Math.floor((25 - 5) / 1)]; // 25 min = index 20
+                if (target) target.scrollIntoView({ inline: 'center', behavior: 'auto' });
+                updatePickerValue();
+            }, 50);
+        }
+
+        function updatePickerValue() {
+            const ruler = document.getElementById('pickerRuler');
+            const ticks = ruler.querySelectorAll('.tick');
+            const rulerRect = ruler.getBoundingClientRect();
+            const centerX = rulerRect.left + rulerRect.width / 2;
+            let closest = null, minDist = Infinity;
+            ticks.forEach(t => {
+                const r = t.getBoundingClientRect();
+                const cx = r.left + r.width / 2;
+                const dist = Math.abs(cx - centerX);
+                if (dist < minDist) { minDist = dist; closest = t; }
+            });
+            if (closest) {
+                const mins = parseInt(closest.dataset.minutes);
+                timerTotal = mins * 60;
+                timerRemain = timerTotal;
+                const m = Math.floor(timerTotal / 60);
+                const s = timerTotal % 60;
+                document.getElementById('pickerValue').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            }
+        }
+
+        function openTimePicker() {
+            if (timerRunning) return;
+            buildRuler();
+            document.getElementById('timePickerOverlay').classList.add('open');
+            document.getElementById('timePicker').classList.add('open');
+            // Listen for scroll to update value
+            const ruler = document.getElementById('pickerRuler');
+            ruler.addEventListener('scroll', updatePickerValue, { passive: true });
+        }
+
+        function closeTimePicker() {
+            document.getElementById('timePickerOverlay').classList.remove('open');
+            document.getElementById('timePicker').classList.remove('open');
+        }
+
+        function confirmTimePicker() {
+            const m = Math.floor(timerTotal / 60);
+            const s = timerTotal % 60;
+            document.getElementById('timerDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
+            closeTimePicker();
+        }
 
         /* ===== Tag Drawer ===== */
         const defaultTags = [
@@ -742,14 +1008,17 @@
             const btn = document.getElementById('focusBtn');
             const tagWrap = document.getElementById('tagWrap');
             const abandonBtn = document.getElementById('abandonBtn');
+            const timerSection = document.getElementById('timerSection');
+            const btnSection = document.getElementById('btnSection');
             if (timerRunning) {
                 clearInterval(timerInterval);
                 timerRunning = false;
                 btn.textContent = '开始专注';
                 btn.classList.remove('running');
-                btn.classList.remove('hide');
+                btnSection.classList.remove('hide');
                 tagWrap.classList.remove('hide');
                 abandonBtn.classList.remove('show');
+                timerSection.classList.remove('center');
                 const elapsed = timerTotal - timerRemain;
                 if (elapsed >= 60) {
                     const now = new Date();
@@ -767,9 +1036,10 @@
                 resetTimer();
             } else {
                 timerRunning = true;
-                btn.classList.add('hide');
+                btnSection.classList.add('hide');
                 tagWrap.classList.add('hide');
                 abandonBtn.classList.add('show');
+                timerSection.classList.add('center');
                 document.getElementById('timerDisplay').classList.add('running');
                 timerInterval = setInterval(tick, 1000);
             }
@@ -784,12 +1054,15 @@
                 const btn = document.getElementById('focusBtn');
                 const tagWrap = document.getElementById('tagWrap');
                 const abandonBtn = document.getElementById('abandonBtn');
+                const timerSection = document.getElementById('timerSection');
+                const btnSection = document.getElementById('btnSection');
                 btn.textContent = '✓ 已完成';
                 btn.classList.remove('running');
                 btn.classList.add('done');
-                btn.classList.remove('hide');
+                btnSection.classList.remove('hide');
                 tagWrap.classList.remove('hide');
                 abandonBtn.classList.remove('show');
+                timerSection.classList.remove('center');
                 document.getElementById('timerDisplay').classList.remove('running');
                 const now = new Date();
                 const ss = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
@@ -812,7 +1085,9 @@
 
         function resetTimer() {
             timerRemain = timerTotal;
-            document.getElementById('timerDisplay').textContent = '25:00';
+            const m = Math.floor(timerTotal / 60);
+            const s = timerTotal % 60;
+            document.getElementById('timerDisplay').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             document.getElementById('timerDisplay').classList.remove('running');
         }
 
@@ -848,10 +1123,14 @@
             const btn = document.getElementById('focusBtn');
             const tagWrap = document.getElementById('tagWrap');
             const abandonBtn = document.getElementById('abandonBtn');
+            const timerSection = document.getElementById('timerSection');
+            const btnSection = document.getElementById('btnSection');
             btn.textContent = '开始专注';
             btn.classList.remove('running', 'hide');
+            btnSection.classList.remove('hide');
             tagWrap.classList.remove('hide');
             abandonBtn.classList.remove('show');
+            timerSection.classList.remove('center');
             document.getElementById('timerDisplay').classList.remove('running');
             resetTimer();
         }
