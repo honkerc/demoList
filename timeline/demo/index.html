@@ -68,73 +68,193 @@
             color: var(--text);
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
+            overflow: hidden;
         }
 
         .app {
             max-width: 420px;
             margin: 0 auto;
-            min-height: 100vh;
+            height: 100vh;
             background: var(--bg);
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* ===== Snap Pages Container ===== */
+        .pages {
+            height: 100%;
+            overflow-y: scroll;
+            scroll-snap-type: y mandatory;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .pages::-webkit-scrollbar {
+            display: none;
+        }
+
+        .page {
+            height: 100vh;
+            scroll-snap-align: start;
             display: flex;
             flex-direction: column;
             position: relative;
+            overflow-y: auto;
         }
 
-        /* ===== Header ===== */
-        .header {
-            padding: 52px 20px 0;
+        .page::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ===== Page Indicator ===== */
+        .page-dots {
+            position: fixed;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
             display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
+            flex-direction: column;
+            gap: 6px;
+            z-index: 50;
+            pointer-events: none;
         }
 
-        .header .left .date {
+        .page-dots .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text3);
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .page-dots .dot.on {
+            opacity: 0.8;
+            background: var(--accent);
+            transform: scale(1.3);
+        }
+
+        /* ===== Page 1: Punch-in ===== */
+        .page-punch {
+            justify-content: center;
+            align-items: center;
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .page-punch .date-display {
             font-size: 12px;
             font-weight: 600;
             color: var(--text3);
             letter-spacing: 0.8px;
             text-transform: uppercase;
+            margin-bottom: 8px;
         }
 
-        .header .left .greeting {
-            font-size: 26px;
+        .page-punch .greeting {
+            font-size: 28px;
             font-weight: 800;
             letter-spacing: -0.5px;
             color: var(--text);
-            margin-top: 6px;
+            margin-bottom: 40px;
         }
 
-        .header .left .greeting .highlight {
+        .page-punch .greeting .highlight {
             background: linear-gradient(135deg, var(--c1), var(--c4));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
-        /* ===== Content ===== */
-        .content {
-            flex: 1;
-            padding: 0 20px 100px;
-            overflow-y: auto;
+        .punch-btn-wrap {
+            position: relative;
+            margin-bottom: 32px;
         }
 
-        .content::-webkit-scrollbar {
-            display: none;
-        }
-
-        /* ===== Record Form (full first screen) ===== */
-        .form-wrap {
-            min-height: 100vh;
+        .punch-btn {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(145deg, var(--accent), #7c7ce0);
+            color: #fff;
+            font-size: 20px;
+            font-weight: 800;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.25, 0.1, 0.25, 1);
+            box-shadow: 0 8px 32px rgba(91, 91, 214, 0.3);
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
             display: flex;
             flex-direction: column;
+            align-items: center;
             justify-content: center;
-            padding-bottom: 40px;
-            position: relative;
+            gap: 4px;
         }
 
-        .form-wrap .scroll-hint {
+        .punch-btn .sub {
+            font-size: 12px;
+            font-weight: 600;
+            opacity: 0.8;
+        }
+
+        .punch-btn:active {
+            transform: scale(0.95);
+            box-shadow: 0 4px 16px rgba(91, 91, 214, 0.2);
+        }
+
+        .punch-btn.done {
+            background: linear-gradient(145deg, var(--c3), #5ddb9a);
+            box-shadow: 0 8px 32px rgba(76, 183, 130, 0.3);
+        }
+
+        .punch-ring {
             position: absolute;
-            bottom: 8px;
+            top: -12px;
+            left: -12px;
+            width: 204px;
+            height: 204px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            z-index: 1;
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ring-pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 0.4;
+            }
+
+            50% {
+                transform: scale(1.04);
+                opacity: 0.15;
+            }
+        }
+
+        .punch-info {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            margin-top: 8px;
+        }
+
+        .punch-info .num {
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 18px;
+        }
+
+        .punch-info .num.done {
+            color: var(--c3);
+        }
+
+        .scroll-up-hint {
+            position: absolute;
+            bottom: 24px;
             left: 50%;
             transform: translateX(-50%);
             display: flex;
@@ -144,13 +264,12 @@
             color: var(--text3);
             font-size: 10px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            opacity: 0.5;
+            opacity: 0.4;
             animation: bob 2s ease-in-out infinite;
         }
 
-        .form-wrap .scroll-hint .arrow {
-            font-size: 14px;
+        .scroll-up-hint .arrow {
+            font-size: 16px;
             line-height: 1;
         }
 
@@ -166,141 +285,19 @@
             }
         }
 
-        .form-card {
-            background: var(--card);
-            border-radius: var(--radius);
-            padding: 20px;
-            box-shadow: var(--shadow);
-            border: 1px solid var(--line);
+        /* ===== Page 2: Timeline ===== */
+        .page-tl {
+            padding: 52px 20px 100px;
         }
 
-        .form-card .label {
-            font-size: 11px;
-            font-weight: 700;
-            color: var(--text3);
-            letter-spacing: 0.5px;
-            margin-bottom: 10px;
-        }
-
-        .pills {
-            display: flex;
-            gap: 6px;
-            margin-bottom: 14px;
-            flex-wrap: wrap;
-        }
-
-        .pills button {
-            padding: 8px 16px;
-            border-radius: 999px;
-            border: 1px solid var(--line);
-            font-size: 12px;
-            font-weight: 600;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.1, 0.25, 1);
-            background: var(--card);
-            color: var(--text2);
-        }
-
-        .pills button:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-        }
-
-        .pills button.on {
-            background: var(--accent);
-            color: #fff;
-            border-color: var(--accent);
-            box-shadow: 0 2px 8px rgba(91, 91, 214, 0.25);
-        }
-
-        .form-row {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 12px;
-        }
-
-        .form-row:last-child {
-            margin-bottom: 0;
-        }
-
-        .form-row input,
-        .form-row select {
-            flex: 1;
-            padding: 12px 14px;
-            border: 1px solid var(--line);
-            border-radius: var(--radius-sm);
-            font-size: 14px;
-            font-family: inherit;
-            background: var(--soft);
-            color: var(--text);
-            outline: none;
-            transition: all 0.2s;
-        }
-
-        .form-row input:focus,
-        .form-row select:focus {
-            border-color: var(--accent);
-            box-shadow: 0 0 0 3px rgba(91, 91, 214, 0.1);
-            background: var(--card);
-        }
-
-        .form-row input::placeholder {
-            color: var(--text3);
-        }
-
-        .form-row select {
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%239a9aa6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 12px center;
-            padding-right: 28px;
-        }
-
-        .btn-record {
-            width: 100%;
-            padding: 14px;
-            border: none;
-            border-radius: var(--radius-sm);
-            font-size: 15px;
-            font-weight: 700;
-            font-family: inherit;
-            cursor: pointer;
-            transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
-            background: var(--accent);
-            color: #fff;
-            letter-spacing: 0.3px;
-        }
-
-        .btn-record:hover {
-            opacity: 0.9;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 16px rgba(91, 91, 214, 0.3);
-        }
-
-        .btn-record:active {
-            transform: scale(0.98);
-        }
-
-        .btn-record.done {
-            background: var(--c3);
-        }
-
-        /* ===== Timeline ===== */
-        .tl-section {
-            margin-bottom: 16px;
-        }
-
-        .tl-header {
+        .page-tl .tl-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
         }
 
-        .tl-header .tl-title {
+        .page-tl .tl-header .tl-title {
             font-size: 12px;
             font-weight: 700;
             color: var(--text3);
@@ -308,7 +305,7 @@
             text-transform: uppercase;
         }
 
-        .tl-header .tl-toggle {
+        .page-tl .tl-header .tl-toggle {
             display: flex;
             align-items: center;
             gap: 6px;
@@ -324,12 +321,12 @@
             transition: all 0.2s;
         }
 
-        .tl-header .tl-toggle:hover {
+        .page-tl .tl-header .tl-toggle:hover {
             border-color: var(--accent);
             color: var(--accent);
         }
 
-        .tl-header .tl-toggle .dot {
+        .page-tl .tl-header .tl-toggle .dot {
             width: 5px;
             height: 5px;
             border-radius: 50%;
@@ -337,7 +334,7 @@
             transition: all 0.2s;
         }
 
-        .tl-header .tl-toggle.on .dot {
+        .page-tl .tl-header .tl-toggle.on .dot {
             background: var(--accent);
         }
 
@@ -521,9 +518,12 @@
         @media (min-width:768px) {
             .app {
                 margin: 20px auto;
-                min-height: 90vh;
-                overflow: hidden;
+                height: 90vh;
                 box-shadow: var(--shadow-lg);
+            }
+
+            .page {
+                height: 90vh;
             }
         }
     </style>
@@ -531,47 +531,29 @@
 
 <body>
     <div class="app">
-        <div class="header">
-            <div class="left">
-                <div class="date" id="todayDate"></div>
+        <div class="pages" id="pagesContainer">
+            <!-- Page 1: Punch-in -->
+            <div class="page page-punch">
+                <div class="date-display" id="todayDate"></div>
                 <div class="greeting">今天 · <span class="highlight">专注</span></div>
-            </div>
-        </div>
-        <div class="content">
-            <div class="form-wrap">
-                <div class="form-card">
-                    <div class="label">记录时长</div>
-                    <div class="pills" id="pills">
-                        <button data-minutes="15">15m</button>
-                        <button data-minutes="25" class="on">25m</button>
-                        <button data-minutes="30">30m</button>
-                        <button data-minutes="45">45m</button>
-                        <button data-minutes="60">60m</button>
-                        <button data-minutes="90">90m</button>
-                        <button data-minutes="120">2h</button>
-                    </div>
-                    <div class="form-row">
-                        <input type="text" id="inputName" placeholder="活动名称" style="flex:2">
-                        <select id="inputCat" style="flex:1">
-                            <option value="工作">工作</option>
-                            <option value="学习">学习</option>
-                            <option value="阅读">阅读</option>
-                            <option value="运动">运动</option>
-                            <option value="创作">创作</option>
-                            <option value="社交">社交</option>
-                            <option value="休息">休息</option>
-                            <option value="其他">其他</option>
-                        </select>
-                    </div>
-                    <button class="btn-record" id="recordBtn" onclick="submitRecord()">记录</button>
+                <div class="punch-btn-wrap">
+                    <button class="punch-btn" id="punchBtn" onclick="punchIn()">
+                        打卡
+                        <span class="sub" id="punchSub">25m</span>
+                    </button>
+                    <div class="punch-ring"></div>
                 </div>
-                <div class="scroll-hint">
+                <div class="punch-info">
+                    今日已记录 <span class="num" id="todayCount">0</span> 项 · <span class="num" id="todayTotal">0h</span>
+                </div>
+                <div class="scroll-up-hint">
                     <span class="arrow">⌄</span>
-                    <span>滑动查看时间轴</span>
+                    <span>上滑查看时间轴</span>
                 </div>
             </div>
 
-            <div class="tl-section">
+            <!-- Page 2: Timeline -->
+            <div class="page page-tl">
                 <div class="tl-header">
                     <span class="tl-title">今日时间轴</span>
                     <button class="tl-toggle on" id="toggleEmptyBtn" onclick="toggleEmptyHours()">
@@ -580,6 +562,11 @@
                 </div>
                 <div class="tl-grid" id="hourlyTimeline"></div>
             </div>
+        </div>
+
+        <div class="page-dots" id="pageDots">
+            <span class="dot on"></span>
+            <span class="dot"></span>
         </div>
 
         <div class="nav">
@@ -615,25 +602,20 @@
         }
 
         let selMin = 25, showEmpty = true;
-        document.querySelectorAll('.pills button').forEach(btn => {
-            btn.addEventListener('click', function () {
-                document.querySelectorAll('.pills button').forEach(b => b.classList.remove('on'));
-                this.classList.add('on'); selMin = parseInt(this.dataset.minutes);
-            });
+
+        /* ===== Snap Page Tracking ===== */
+        const pagesEl = document.getElementById('pagesContainer');
+        const dots = document.querySelectorAll('#pageDots .dot');
+
+        pagesEl.addEventListener('scroll', function () {
+            const scrollTop = this.scrollTop;
+            const pageHeight = this.clientHeight;
+            const idx = Math.round(scrollTop / pageHeight);
+            dots.forEach((d, i) => d.classList.toggle('on', i === idx));
         });
 
-        function toggleEmptyHours() {
-            showEmpty = !showEmpty;
-            const btn = document.getElementById('toggleEmptyBtn');
-            btn.classList.toggle('on');
-            btn.innerHTML = '<span class="dot"></span>' + (showEmpty ? '空白' : '隐藏');
-            render();
-        }
-
-        function submitRecord() {
-            const name = document.getElementById('inputName').value.trim();
-            const cat = document.getElementById('inputCat').value;
-            if (!name) { alert('请输入活动名称'); return; }
+        /* ===== Punch-in ===== */
+        function punchIn() {
             const now = new Date();
             const ss = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
             const et = now.getHours() * 60 + now.getMinutes() + selMin;
@@ -643,16 +625,36 @@
             const records = getRecords();
             let total = 0; records.filter(r => r.date === today).forEach(r => { total += r.duration; });
             if (total + dur > 24 * 3600) { alert('一天不能超过24小时！'); return; }
-            records.push({ id: Date.now(), date: today, start: ss, end: es, duration: dur, category: cat, name, created_at: new Date().toISOString() });
+            records.push({ id: Date.now(), date: today, start: ss, end: es, duration: dur, category: '工作', name: '专注', created_at: new Date().toISOString() });
             saveRecords(records);
             refresh();
-            document.getElementById('inputName').value = '';
-            const btn = document.getElementById('recordBtn');
-            btn.textContent = '✓ 已记录'; btn.classList.add('done');
-            setTimeout(() => { btn.textContent = '记录'; btn.classList.remove('done'); }, 1200);
+            const btn = document.getElementById('punchBtn');
+            btn.textContent = '✓';
+            btn.classList.add('done');
+            setTimeout(() => { btn.innerHTML = '打卡<span class="sub" id="punchSub">' + selMin + 'm</span>'; btn.classList.remove('done'); }, 1500);
         }
 
-        function refresh() { render(); }
+        function refresh() {
+            updateStats();
+            render();
+        }
+
+        function updateStats() {
+            const records = getRecords();
+            const today = getToday();
+            const dr = records.filter(r => r.date === today);
+            let totalSec = 0; dr.forEach(r => totalSec += r.duration);
+            document.getElementById('todayCount').textContent = dr.length;
+            document.getElementById('todayTotal').textContent = fmt(totalSec);
+        }
+
+        function toggleEmptyHours() {
+            showEmpty = !showEmpty;
+            const btn = document.getElementById('toggleEmptyBtn');
+            btn.classList.toggle('on');
+            btn.innerHTML = '<span class="dot"></span>' + (showEmpty ? '空白' : '隐藏');
+            render();
+        }
 
         function render() {
             const records = getRecords();
@@ -660,7 +662,7 @@
             const dr = records.filter(r => r.date === today).sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00'));
             const c = document.getElementById('hourlyTimeline');
             const sh = 6, eh = 23;
-            let html = ''; const used = new Set();
+            let html = '';
             for (let h = sh; h < eh; h++) {
                 const hs = h * 60, he = (h + 1) * 60;
                 const ov = dr.filter(r => { const rs = pm(r.start), re = pm(r.end); return rs < he && re > hs; });
@@ -672,7 +674,7 @@
                 const segs = [];
                 ov.forEach(r => {
                     const rs = Math.max(pm(r.start), hs); const re = Math.min(pm(r.end), he);
-                    if (re > rs) { segs.push({ start: rs, end: re, name: r.name, category: r.category }); used.add(r.category); }
+                    if (re > rs) { segs.push({ start: rs, end: re, name: r.name, category: r.category }); }
                 });
                 segs.sort((a, b) => a.start - b.start);
                 html += '<div class="tl-track">';
@@ -728,7 +730,7 @@
             document.getElementById('todayDate').textContent = now.getFullYear() + '年' + m + '月' + d + '日 周' + days[now.getDay()];
         }
 
-        genMock(); updateDate(); refresh();
+        genMock(); updateDate(); updateStats(); render();
     </script>
 </body>
 
