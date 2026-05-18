@@ -271,6 +271,24 @@
             -ms-touch-action: pan-x;
         }
 
+        /* Selected time above the center tick */
+        .picker-selected {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 80px;
+            font-weight: 900;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            color: var(--accent);
+            line-height: 1;
+            z-index: 30;
+            pointer-events: none;
+            text-align: center;
+        }
+
         /* Edge fade masks */
         .picker-ruler-wrap::before,
         .picker-ruler-wrap::after {
@@ -358,24 +376,6 @@
             color: var(--accent);
             font-size: 15px;
             font-weight: 900;
-        }
-
-        /* Selected time above the center tick */
-        .picker-selected {
-            position: absolute;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 80px;
-            font-weight: 900;
-            font-family: inherit;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: 4px;
-            color: var(--accent);
-            line-height: 1;
-            z-index: 30;
-            pointer-events: none;
-            text-align: center;
         }
 
         /* Bottom: confirm button */
@@ -810,8 +810,8 @@
         <!-- Time Picker (Fullscreen Minimal Caliper) -->
         <div class="time-picker-overlay" id="timePickerOverlay">
             <div class="time-picker" id="timePicker">
-                <div class="picker-selected" id="pickerSelected">25:00</div>
                 <div class="picker-ruler-wrap">
+                    <div class="picker-selected" id="pickerSelected">25</div>
                     <div class="picker-ruler" id="pickerRuler"></div>
                 </div>
                 <button class="picker-confirm" onclick="confirmTimePicker()">完成</button>
