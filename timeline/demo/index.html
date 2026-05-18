@@ -252,20 +252,13 @@
             flex: 1;
             display: flex;
             flex-direction: column;
+            align-items: center;
             max-width: 420px;
             width: 100%;
             position: relative;
         }
 
-        /* ===== Top half: number display at 1/3 ===== */
-        .picker-top {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding-top: 10vh;
-        }
-
+        /* Number at ~1/3 screen */
         .picker-number {
             font-size: 96px;
             font-weight: 900;
@@ -275,21 +268,12 @@
             color: var(--picker-accent);
             line-height: 1;
             text-align: center;
+            margin-top: 25vh;
+            margin-bottom: 20px;
         }
 
-        /* ===== Bottom half: ruler + button ===== */
-        .picker-bottom {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-            width: 100%;
-            position: relative;
-        }
-
+        /* Ruler directly below number */
         .picker-ruler-wrap {
-            flex: 1;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -813,21 +797,15 @@
             </div>
         </div>
 
-        <!-- Time Picker (Two-part layout) -->
+        <!-- Time Picker (Number above ruler) -->
         <div class="time-picker-overlay" id="timePickerOverlay">
             <div class="time-picker" id="timePicker">
-                <!-- Top half: big number -->
-                <div class="picker-top">
-                    <div class="picker-number" id="pickerNumber">25</div>
+                <div class="picker-number" id="pickerNumber">25</div>
+                <div class="picker-ruler-wrap">
+                    <div class="picker-center-line"></div>
+                    <div class="picker-ruler" id="pickerRuler"></div>
                 </div>
-                <!-- Bottom half: ruler + button -->
-                <div class="picker-bottom">
-                    <div class="picker-ruler-wrap">
-                        <div class="picker-center-line"></div>
-                        <div class="picker-ruler" id="pickerRuler"></div>
-                    </div>
-                    <button class="picker-confirm" onclick="confirmTimePicker()">完成</button>
-                </div>
+                <button class="picker-confirm" onclick="confirmTimePicker()">完成</button>
             </div>
         </div>
 
