@@ -1,0 +1,756 @@
+提
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>看板 - TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f5f5f7;
+            --card: #ffffff;
+            --text: #1d1d1f;
+            --text2: #6e6e73;
+            --text3: #86868b;
+            --line: #d2d2d7;
+            --soft: #e8e8ed;
+            --accent: #0071e3;
+            --c1: #ff375f;
+            --c2: #0071e3;
+            --c3: #5e5ce6;
+            --c4: #30d158;
+            --c5: #ff9f0a;
+            --c6: #ff6482;
+            --c7: #bf5af2;
+            --c8: #86868b;
+            --empty: #e8e8ed;
+            --bg-gradient: radial-gradient(ellipse at 30% 10%, #fff5f0, #fef3e8);
+        }
+
+        html.dark {
+            --bg: #000000;
+            --card: #1c1c1e;
+            --text: #f5f5f7;
+            --text2: #a1a1a6;
+            --text3: #6e6e73;
+            --line: #38383a;
+            --soft: #2c2c2e;
+            --accent: #2997ff;
+            --c1: #ff453a;
+            --c2: #2997ff;
+            --c3: #5e5ce6;
+            --c4: #30d158;
+            --c5: #ff9f0a;
+            --c6: #ff6482;
+            --c7: #bf5af2;
+            --c8: #6e6e73;
+            --empty: #2c2c2e;
+            --bg-gradient: radial-gradient(ellipse at 30% 10%, #1a1a1a, #000000);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            padding: 56px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header .left .date {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text3);
+            letter-spacing: 0.5px;
+        }
+
+        .header .left .greeting {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .header .left .greeting .highlight {
+            background: linear-gradient(135deg, var(--c2), var(--c5));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 24px 100px;
+            overflow-y: auto;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Period Selector */
+        .period-selector {
+            display: flex;
+            gap: 6px;
+            margin: 24px 0 16px;
+        }
+
+        .period-btn {
+            flex: 1;
+            padding: 10px 0;
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text2);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            font-family: inherit;
+        }
+
+        .period-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .period-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: #fff;
+        }
+
+        /* Overview Cards */
+        .overview-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .overview-card {
+            flex: 1;
+            background: var(--card);
+            border-radius: 16px;
+            padding: 16px 12px;
+            border: 1px solid var(--line);
+        }
+
+        .overview-card .label {
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text3);
+            margin-bottom: 4px;
+        }
+
+        .overview-card .value {
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .overview-card .sub {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        /* Chart Card */
+        .chart-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid var(--line);
+            margin-bottom: 12px;
+        }
+
+        .chart-card .chart-title {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text2);
+            margin-bottom: 16px;
+        }
+
+        /* Bar Chart */
+        .bar-chart {
+            display: flex;
+            align-items: flex-end;
+            gap: 4px;
+            height: 120px;
+            padding: 0 2px;
+        }
+
+        .bar-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+        }
+
+        .bar {
+            width: 100%;
+            border-radius: 4px 4px 0 0;
+            min-height: 4px;
+            transition: height 0.5s ease;
+        }
+
+        .bar-label {
+            font-size: 9px;
+            color: var(--text3);
+            font-weight: 600;
+        }
+
+        .bar-value {
+            font-size: 8px;
+            color: var(--text3);
+            font-weight: 500;
+        }
+
+        /* Donut */
+        .donut-container {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .donut {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            position: relative;
+            flex-shrink: 0;
+            background: var(--soft);
+        }
+
+        .donut-center {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: var(--card);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text);
+        }
+
+        .donut-legend {
+            flex: 1;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 3px 0;
+            font-size: 12px;
+        }
+
+        .legend-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .legend-name {
+            flex: 1;
+            color: var(--text2);
+            font-weight: 500;
+        }
+
+        .legend-value {
+            font-weight: 700;
+            color: var(--text);
+        }
+
+        .legend-pct {
+            color: var(--text3);
+            width: 32px;
+            text-align: right;
+            font-weight: 600;
+        }
+
+        /* Goal */
+        .goal-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 0;
+            border-bottom: 1px solid var(--line);
+        }
+
+        .goal-item:last-child {
+            border-bottom: none;
+        }
+
+        .goal-info {
+            flex: 1;
+        }
+
+        .goal-info .goal-name {
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .goal-info .goal-detail {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 2px;
+        }
+
+        .goal-bar {
+            width: 80px;
+            height: 6px;
+            background: var(--soft);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .goal-bar-fill {
+            height: 100%;
+            border-radius: 3px;
+            transition: width 0.5s ease;
+        }
+
+        .goal-pct {
+            font-size: 13px;
+            font-weight: 700;
+            width: 36px;
+            text-align: right;
+            color: var(--text2);
+        }
+
+        /* Insight */
+        .insight-card {
+            background: var(--card);
+            border-radius: 20px;
+            padding: 18px;
+            border: 1px solid var(--line);
+            margin-bottom: 12px;
+        }
+
+        .insight-card .insight-title {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--accent);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .insight-card .insight-text {
+            font-size: 14px;
+            color: var(--text2);
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: color-mix(in srgb, var(--card) 85%, transparent);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            padding: 8px 24px 28px;
+            z-index: 100;
+            gap: 4px;
+        }
+
+        .nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 8px 0;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--soft);
+        }
+
+        .nav a.on {
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+        }
+
+        @media (min-width: 768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+                overflow: hidden;
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="left">
+                <div class="date" id="todayDate"></div>
+                <div class="greeting">看板</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="period-selector">
+                <button class="period-btn active" data-period="week" onclick="selectPeriod('week')">本周</button>
+                <button class="period-btn" data-period="month" onclick="selectPeriod('month')">本月</button>
+                <button class="period-btn" data-period="all" onclick="selectPeriod('all')">全部</button>
+            </div>
+
+            <div class="overview-row" id="overviewRow">
+                <div class="overview-card">
+                    <div class="label">总记录</div>
+                    <div class="value" id="ovTotal">0h</div>
+                    <div class="sub" id="ovDays">0 天</div>
+                </div>
+                <div class="overview-card">
+                    <div class="label">日均</div>
+                    <div class="value" id="ovDaily">0h</div>
+                    <div class="sub" id="ovAvg">目标 8h</div>
+                </div>
+                <div class="overview-card">
+                    <div class="label">活动数</div>
+                    <div class="value" id="ovCount">0</div>
+                    <div class="sub" id="ovRate">完成率 0%</div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">每日趋势</div>
+                <div class="bar-chart" id="barChart"></div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">分类分布</div>
+                <div class="donut-container" id="donutContainer">
+                    <div class="donut" id="donut">
+                        <div class="donut-center" id="donutCenter">0%</div>
+                    </div>
+                    <div class="donut-legend" id="donutLegend"></div>
+                </div>
+            </div>
+
+            <div class="chart-card">
+                <div class="chart-title">目标进度</div>
+                <div id="goalList">
+                    <div class="goal-item">
+                        <div class="goal-info">
+                            <div class="goal-name">每日专注</div>
+                            <div class="goal-detail" id="goalDailyDetail">0h / 8h</div>
+                        </div>
+                        <div class="goal-bar">
+                            <div class="goal-bar-fill" id="goalDailyBar" style="width:0%;background:var(--c2);"></div>
+                        </div>
+                        <span class="goal-pct" id="goalDailyPct">0%</span>
+                    </div>
+                    <div class="goal-item">
+                        <div class="goal-info">
+                            <div class="goal-name">每周阅读</div>
+                            <div class="goal-detail" id="goalReadDetail">0h / 5h</div>
+                        </div>
+                        <div class="goal-bar">
+                            <div class="goal-bar-fill" id="goalReadBar" style="width:0%;background:var(--c3);"></div>
+                        </div>
+                        <span class="goal-pct" id="goalReadPct">0%</span>
+                    </div>
+                    <div class="goal-item">
+                        <div class="goal-info">
+                            <div class="goal-name">每周运动</div>
+                            <div class="goal-detail" id="goalSportDetail">0h / 3h</div>
+                        </div>
+                        <div class="goal-bar">
+                            <div class="goal-bar-fill" id="goalSportBar" style="width:0%;background:var(--c1);"></div>
+                        </div>
+                        <span class="goal-pct" id="goalSportPct">0%</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="insight-card" id="insightCard">
+                <div class="insight-title">INSIGHT</div>
+                <div class="insight-text" id="insightText">暂无足够数据生成洞察</div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <a href="index.html">记录</a>
+            <a href="tasks.html">任务</a>
+            <a href="timeline.html">时间线</a>
+            <a class="on" href="dashboard.html">看板</a>
+            <a href="profile.html">我的</a>
+        </div>
+    </div>
+
+    <script>
+        let currentPeriod = 'week';
+
+        (function () {
+            const saved = localStorage.getItem('timeline_theme');
+            const isDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isDark) document.documentElement.classList.add('dark');
+        })();
+
+        function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]'); }
+
+        function fmt(s) {
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+        }
+
+        function cc(cat) {
+            const m = { '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)', '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)' };
+            return m[cat] || 'var(--text3)';
+        }
+
+        const catOrder = ['工作', '学习', '阅读', '运动', '创作', '社交', '休息', '其他'];
+
+        function getDateRange(period) {
+            const now = new Date();
+            let start = new Date();
+            if (period === 'week') {
+                start.setDate(now.getDate() - now.getDay());
+            } else if (period === 'month') {
+                start.setDate(1);
+            } else {
+                start = new Date(0);
+            }
+            start.setHours(0, 0, 0, 0);
+            return { start: start.toISOString().slice(0, 10), end: now.toISOString().slice(0, 10) };
+        }
+
+        function selectPeriod(period) {
+            currentPeriod = period;
+            document.querySelectorAll('.period-btn').forEach(el => el.classList.remove('active'));
+            document.querySelector('.period-btn[data-period="' + period + '"]').classList.add('active');
+            renderDashboard();
+        }
+
+        function renderDashboard() {
+            const records = getRecords();
+            const range = getDateRange(currentPeriod);
+            const filtered = records.filter(r => r.date >= range.start && r.date <= range.end);
+
+            let totalSec = 0, daySet = new Set(), count = 0;
+            filtered.forEach(r => { totalSec += r.duration; daySet.add(r.date); count++; });
+            const days = daySet.size || 1;
+            const dailyAvg = Math.round(totalSec / days);
+            const goal = 8 * 3600;
+            const rate = goal > 0 ? Math.min(100, Math.round(totalSec / days / goal * 100)) : 0;
+
+            document.getElementById('ovTotal').textContent = fmt(totalSec);
+            document.getElementById('ovDays').textContent = days + ' 天';
+            document.getElementById('ovDaily').textContent = fmt(dailyAvg);
+            document.getElementById('ovAvg').textContent = '目标 ' + fmt(goal);
+            document.getElementById('ovCount').textContent = count;
+            document.getElementById('ovRate').textContent = '完成率 ' + rate + '%';
+
+            renderBarChart(filtered, range);
+            renderDonut(filtered);
+            renderGoals(filtered);
+            renderInsight(filtered, dailyAvg, rate);
+        }
+
+        function renderBarChart(records, range) {
+            const container = document.getElementById('barChart');
+            const dayMap = {};
+            const start = new Date(range.start);
+            const end = new Date(range.end);
+            for (let d = new Date(start); d <= end; d.setDate(d.getDate() + 1)) {
+                const key = d.toISOString().slice(0, 10);
+                dayMap[key] = 0;
+            }
+            records.forEach(r => {
+                if (dayMap[r.date] !== undefined) dayMap[r.date] += r.duration;
+            });
+            const entries = Object.entries(dayMap);
+            const maxVal = Math.max(...entries.map(e => e[1]), 1);
+            const goal = 8 * 3600;
+
+            container.innerHTML = entries.map(([date, sec]) => {
+                const h = Math.max(4, (sec / maxVal) * 100);
+                const day = parseInt(date.slice(8, 10));
+                const label = day + 'd';
+                const val = fmt(sec);
+                const color = sec >= goal ? 'var(--c4)' : 'var(--c2)';
+                return '<div class="bar-item">' +
+                    '<span class="bar-value">' + val + '</span>' +
+                    '<div class="bar" style="height:' + h + 'px;background:' + color + ';"></div>' +
+                    '<span class="bar-label">' + label + '</span>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function renderDonut(records) {
+            const catMap = {};
+            records.forEach(r => { catMap[r.category] = (catMap[r.category] || 0) + r.duration; });
+            const total = Object.values(catMap).reduce((a, b) => a + b, 0);
+            const sorted = catOrder.filter(c => catMap[c]).map(c => [c, catMap[c]]);
+            const others = Object.entries(catMap).filter(([c]) => !catOrder.includes(c));
+            sorted.push(...others);
+
+            const donut = document.getElementById('donut');
+            if (sorted.length === 0) {
+                donut.style.background = 'var(--soft)';
+                document.getElementById('donutCenter').textContent = '0%';
+                document.getElementById('donutLegend').innerHTML = '<div style="color:var(--text3);font-size:12px;">暂无数据</div>';
+                return;
+            }
+
+            let gradient = 'conic-gradient(';
+            let currentDeg = 0;
+            sorted.forEach(([cat, sec], i) => {
+                const pct = total > 0 ? (sec / total) * 100 : 0;
+                const color = cc(cat);
+                const startDeg = currentDeg;
+                const endDeg = currentDeg + pct * 3.6;
+                gradient += color + ' ' + startDeg + 'deg ' + endDeg + 'deg';
+                if (i < sorted.length - 1) gradient += ', ';
+                currentDeg = endDeg;
+            });
+            gradient += ')';
+            donut.style.background = gradient;
+
+            const topCat = sorted.length > 0 ? sorted[0][0] : '';
+            const topPct = sorted.length > 0 ? Math.round((sorted[0][1] / total) * 100) : 0;
+            document.getElementById('donutCenter').textContent = topPct + '%';
+
+            const legend = document.getElementById('donutLegend');
+            legend.innerHTML = sorted.map(([cat, sec]) => {
+                const pct = total > 0 ? Math.round((sec / total) * 100) : 0;
+                const color = cc(cat);
+                return '<div class="legend-item">' +
+                    '<span class="legend-dot" style="background:' + color + ';"></span>' +
+                    '<span class="legend-name">' + cat + '</span>' +
+                    '<span class="legend-value">' + fmt(sec) + '</span>' +
+                    '<span class="legend-pct">' + pct + '%</span>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function renderGoals(records) {
+            const now = new Date();
+            const today = now.toISOString().slice(0, 10);
+            const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay());
+            const weekKey = weekStart.toISOString().slice(0, 10);
+
+            let todaySec = 0;
+            records.forEach(r => { if (r.date === today) todaySec += r.duration; });
+            const dailyGoal = 8 * 3600;
+            const dailyPct = Math.min(100, Math.round(todaySec / dailyGoal * 100));
+            document.getElementById('goalDailyDetail').textContent = fmt(todaySec) + ' / 8h';
+            document.getElementById('goalDailyBar').style.width = dailyPct + '%';
+            document.getElementById('goalDailyPct').textContent = dailyPct + '%';
+
+            let readSec = 0, sportSec = 0;
+            records.forEach(r => {
+                if (r.date >= weekKey) {
+                    if (r.category === '阅读') readSec += r.duration;
+                    if (r.category === '运动') sportSec += r.duration;
+                }
+            });
+            const readGoal = 5 * 3600;
+            const readPct = Math.min(100, Math.round(readSec / readGoal * 100));
+            document.getElementById('goalReadDetail').textContent = fmt(readSec) + ' / 5h';
+            document.getElementById('goalReadBar').style.width = readPct + '%';
+            document.getElementById('goalReadPct').textContent = readPct + '%';
+
+            const sportGoal = 3 * 3600;
+            const sportPct = Math.min(100, Math.round(sportSec / sportGoal * 100));
+            document.getElementById('goalSportDetail').textContent = fmt(sportSec) + ' / 3h';
+            document.getElementById('goalSportBar').style.width = sportPct + '%';
+            document.getElementById('goalSportPct').textContent = sportPct + '%';
+        }
+
+        function renderInsight(records, dailyAvg, rate) {
+            const text = document.getElementById('insightText');
+            if (records.length === 0) {
+                text.textContent = '暂无足够数据生成洞察，开始记录你的时间吧。';
+                return;
+            }
+            const catMap = {};
+            records.forEach(r => { catMap[r.category] = (catMap[r.category] || 0) + r.duration; });
+            const topCat = Object.entries(catMap).sort((a, b) => b[1] - a[1])[0];
+            const total = Object.values(catMap).reduce((a, b) => a + b, 0);
+            const topPct = topCat ? Math.round((topCat[1] / total) * 100) : 0;
+
+            let insight = '';
+            if (rate >= 80) insight = '专注度 ' + rate + '%，状态极佳 ✦';
+            else if (rate >= 50) insight = '专注度 ' + rate + '%，继续保持';
+            else insight = '专注度 ' + rate + '%，建议增加专注时间';
+
+            if (topCat) insight += ' 主要时间投入「' + topCat[0] + '」占 ' + topPct + '%';
+            if (dailyAvg < 4 * 3600) insight += ' 日均 ' + fmt(dailyAvg) + '，建议提升至 8h';
+            text.textContent = insight;
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            document.getElementById('todayDate').textContent = now.getFullYear() + '年' + m + '月' + d + '日 周' + days[now.getDay()];
+        }
+
+        updateDate();
+        renderDashboard();
+    </script>
+</body>
+
+</html>

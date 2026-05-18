@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f5f5f7;
+            --card: #ffffff;
+            --text: #1d1d1f;
+            --text2: #6e6e73;
+            --text3: #86868b;
+            --line: #d2d2d7;
+            --soft: #e8e8ed;
+            --accent: #0071e3;
+            --c1: #ff375f;
+            --c2: #0071e3;
+            --c3: #5e5ce6;
+            --c4: #30d158;
+            --c5: #ff9f0a;
+            --c6: #ff6482;
+            --c7: #bf5af2;
+            --c8: #86868b;
+            --empty: #e8e8ed;
+            --bg-gradient: radial-gradient(ellipse at 30% 10%, #fff5f0, #fef3e8);
+        }
+
+        html.dark {
+            --bg: #000000;
+            --card: #1c1c1e;
+            --text: #f5f5f7;
+            --text2: #a1a1a6;
+            --text3: #6e6e73;
+            --line: #38383a;
+            --soft: #2c2c2e;
+            --accent: #2997ff;
+            --c1: #ff453a;
+            --c2: #2997ff;
+            --c3: #5e5ce6;
+            --c4: #30d158;
+            --c5: #ff9f0a;
+            --c6: #ff6482;
+            --c7: #bf5af2;
+            --c8: #6e6e73;
+            --empty: #2c2c2e;
+            --bg-gradient: radial-gradient(ellipse at 30% 10%, #1a1a1a, #000000);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg-gradient);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            padding: 56px 24px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .header .left .date {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text3);
+            letter-spacing: 0.5px;
+        }
+
+        .header .left .greeting {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: -0.8px;
+            color: var(--text);
+            margin-top: 4px;
+        }
+
+        .header .left .greeting .highlight {
+            background: linear-gradient(135deg, var(--c2), var(--c5));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 24px 100px;
+            overflow-y: auto;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* ===== 记录表单 ===== */
+        .form {
+            margin: 28px 0;
+        }
+
+        .form .card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 24px;
+            border: 1px solid var(--line);
+        }
+
+        .form .pills {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 14px;
+            flex-wrap: wrap;
+        }
+
+        .form .pills button {
+            padding: 10px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--line);
+            font-size: 13px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: var(--card);
+            color: var(--text2);
+        }
+
+        .form .pills button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .form .pills button.on {
+            background: var(--accent);
+            color: #fff;
+            border-color: var(--accent);
+        }
+
+        .form .row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 10px;
+        }
+
+        .form .row:last-child {
+            margin-bottom: 0;
+        }
+
+        .form .row input,
+        .form .row select {
+            flex: 1;
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--soft);
+            color: var(--text);
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .form .row input:focus,
+        .form .row select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 4px rgba(0, 113, 227, 0.1);
+            background: var(--card);
+        }
+
+        .form .row input::placeholder {
+            color: var(--text3);
+        }
+
+        .form .row select {
+            cursor: pointer;
+            appearance: none;
+            -webkit-appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%2386868b'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 14px center;
+            padding-right: 30px;
+        }
+
+        .form .go {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 16px;
+            font-size: 16px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.25s;
+            background: var(--accent);
+            color: #fff;
+        }
+
+        .form .go:hover {
+            opacity: 0.85;
+        }
+
+        .form .go:active {
+            transform: scale(0.97);
+        }
+
+        /* ===== 时间轴 ===== */
+        .tl {
+            margin-bottom: 16px;
+        }
+
+        .tl .hd {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .tl .hd .t {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .tl .hd .btn {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--card);
+            border: 1px solid var(--line);
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            cursor: pointer;
+            font-family: inherit;
+            border-radius: 999px;
+            transition: all 0.2s;
+        }
+
+        .tl .hd .btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .tl .hd .btn .dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: var(--text3);
+            transition: all 0.2s;
+        }
+
+        .tl .hd .btn.on .dot {
+            background: var(--accent);
+        }
+
+        .tl .list {
+            padding: 0;
+        }
+
+        .tl .row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            min-height: 44px;
+        }
+
+        .tl .row.hide {
+            display: none;
+        }
+
+        .tl .row .lab {
+            width: 48px;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text3);
+            text-align: right;
+            padding: 10px 12px 10px 0;
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+            align-self: flex-start;
+            line-height: 24px;
+        }
+
+        .tl .row .bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            position: relative;
+            min-height: 28px;
+        }
+
+        .tl .row .bar .track {
+            display: flex;
+            width: 100%;
+            height: 28px;
+            background: var(--empty);
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .tl .row .bar .track .seg {
+            height: 100%;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 4px;
+        }
+
+        .tl .row .bar .track .seg:first-child {
+            border-radius: 8px 0 0 8px;
+        }
+
+        .tl .row .bar .track .seg:last-child {
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tl .row .bar .track .seg:only-child {
+            border-radius: 8px;
+        }
+
+        .tl .row .bar .track .seg:hover {
+            filter: brightness(1.15);
+            z-index: 2;
+        }
+
+        .tl .row .bar .track .seg .t {
+            font-size: 11px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            pointer-events: none;
+            text-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .tl .row .bar .track .seg .tip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 12px;
+            padding: 8px 14px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: var(--text);
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
+        }
+
+        .tl .row .bar .track .seg:hover .tip {
+            display: block;
+        }
+
+        .tl .leg {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 16px;
+            padding-top: 14px;
+            border-top: 1px solid var(--line);
+        }
+
+        .tl .leg span {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text2);
+        }
+
+        .tl .leg span .d {
+            width: 10px;
+            height: 10px;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+
+        /* ===== Nav ===== */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: color-mix(in srgb, var(--card) 85%, transparent);
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            padding: 8px 24px 28px;
+            z-index: 100;
+            gap: 4px;
+        }
+
+        .nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 8px 0;
+            text-decoration: none;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            transition: all 0.2s;
+        }
+
+        .nav a:hover {
+            background: var(--soft);
+        }
+
+        .nav a.on {
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent);
+        }
+
+        @media (min-width: 768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+                overflow: hidden;
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="left">
+                <div class="date" id="todayDate"></div>
+                <div class="greeting" id="greeting">今天 · <span class="highlight">专注</span></div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="form">
+                <div class="card">
+                    <div class="pills" id="pills">
+                        <button data-minutes="15">15m</button>
+                        <button data-minutes="25" class="on">25m</button>
+                        <button data-minutes="30">30m</button>
+                        <button data-minutes="45">45m</button>
+                        <button data-minutes="60">60m</button>
+                        <button data-minutes="90">90m</button>
+                        <button data-minutes="120">120m</button>
+                    </div>
+                    <div class="row">
+                        <input type="text" id="inputName" placeholder="活动" style="flex:2">
+                        <select id="inputCat" style="flex:1">
+                            <option value="工作">工作</option>
+                            <option value="学习">学习</option>
+                            <option value="阅读">阅读</option>
+                            <option value="运动">运动</option>
+                            <option value="创作">创作</option>
+                            <option value="社交">社交</option>
+                            <option value="休息">休息</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <button class="go" onclick="submitRecord()">记录</button>
+                </div>
+            </div>
+
+            <div class="tl">
+                <div class="hd">
+                    <span class="t">时间轴</span>
+                    <button class="btn on" id="toggleEmptyBtn" onclick="toggleEmptyHours()">
+                        <span class="dot"></span>
+                        空白
+                    </button>
+                </div>
+                <div class="list" id="hourlyTimeline"></div>
+            </div>
+        </div>
+
+        <div class="nav">
+            <a class="on" href="index.html">记录</a>
+            <a href="tasks.html">任务</a>
+            <a href="timeline.html">时间线</a>
+            <a href="dashboard.html">看板</a>
+            <a href="profile.html">我的</a>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            const saved = localStorage.getItem('timeline_theme');
+            const isDark = saved ? saved === 'dark' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+            if (isDark) document.documentElement.classList.add('dark');
+        })();
+
+        function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]'); }
+        function saveRecords(r) { localStorage.setItem('timeline_records', JSON.stringify(r)); }
+        function getToday() { return new Date().toISOString().slice(0, 10); }
+
+        function fmt(s) {
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            return h > 0 ? h + 'h ' + m + 'm' : m + 'm';
+        }
+
+        function cc(cat) {
+            const m = { '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)', '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)' };
+            return m[cat] || 'var(--text3)';
+        }
+
+        let selMin = 25;
+        let showEmpty = true;
+
+        document.querySelectorAll('.pills button').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.pills button').forEach(b => b.classList.remove('on'));
+                this.classList.add('on');
+                selMin = parseInt(this.dataset.minutes);
+            });
+        });
+
+        function toggleEmptyHours() {
+            showEmpty = !showEmpty;
+            const btn = document.getElementById('toggleEmptyBtn');
+            btn.classList.toggle('on');
+            btn.innerHTML = '<span class="dot"></span>' + (showEmpty ? '空白' : '隐藏');
+            render();
+        }
+
+        function submitRecord() {
+            const name = document.getElementById('inputName').value.trim();
+            const cat = document.getElementById('inputCat').value;
+            const mins = selMin;
+            if (!name) { alert('请输入活动名称'); return; }
+
+            const now = new Date();
+            const ss = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0');
+            const et = now.getHours() * 60 + now.getMinutes() + mins;
+            const es = String(Math.floor(et / 60) % 24).padStart(2, '0') + ':' + String(et % 60).padStart(2, '0');
+            const dur = mins * 60;
+
+            const today = getToday();
+            const records = getRecords();
+            let total = 0;
+            records.filter(r => r.date === today).forEach(r => { total += r.duration; });
+            if (total + dur > 24 * 3600) { alert('一天不能超过24小时！'); return; }
+
+            records.push({ id: Date.now(), date: today, start: ss, end: es, duration: dur, category: cat, name, created_at: new Date().toISOString() });
+            saveRecords(records);
+            refresh();
+
+            document.getElementById('inputName').value = '';
+
+            const btn = document.querySelector('.go');
+            btn.textContent = '✓ 已记录';
+            btn.style.background = 'var(--c4)';
+            setTimeout(() => {
+                btn.textContent = '记录';
+                btn.style.background = '';
+            }, 1200);
+        }
+
+        function refresh() {
+            const records = getRecords();
+            const today = getToday();
+            const dr = records.filter(r => r.date === today);
+            let s = 0;
+            dr.forEach(r => { s += r.duration; });
+            render();
+        }
+
+        function render() {
+            const records = getRecords();
+            const today = getToday();
+            const dr = records.filter(r => r.date === today).sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00'));
+            const c = document.getElementById('hourlyTimeline');
+            const sh = 6, eh = 23;
+            let html = '';
+            const used = new Set();
+
+            for (let h = sh; h < eh; h++) {
+                const hs = h * 60, he = (h + 1) * 60;
+                const ov = dr.filter(r => { const rs = pm(r.start), re = pm(r.end); return rs < he && re > hs; });
+                const empty = ov.length === 0;
+                const hc = (!showEmpty && empty) ? ' hide' : '';
+
+                html += '<div class="row' + hc + '">';
+                html += '<span class="lab">' + h + ':00</span>';
+                html += '<div class="bar">';
+
+                const segs = [];
+                ov.forEach(r => {
+                    const rs = Math.max(pm(r.start), hs);
+                    const re = Math.min(pm(r.end), he);
+                    if (re > rs) { segs.push({ start: rs, end: re, name: r.name, category: r.category }); used.add(r.category); }
+                });
+                segs.sort((a, b) => a.start - b.start);
+
+                html += '<div class="track">';
+                segs.forEach(s => {
+                    const w = ((s.end - s.start) / 60) * 100;
+                    const durStr = fmt((s.end - s.start) * 60);
+                    html += '<div class="seg" style="width:' + w + '%;background:' + cc(s.category) + ';">';
+                    html += '<span class="t">' + durStr + '</span>';
+                    html += '<span class="tip">' + s.name + ' · ' + durStr + '</span></div>';
+                });
+                html += '</div>';
+                html += '</div></div>';
+            }
+
+            let leg = '';
+            Array.from(used).sort().forEach(cat => {
+                leg += '<span><span class="d" style="background:' + cc(cat) + ';"></span>' + cat + '</span>';
+            });
+            c.innerHTML = html + '<div class="leg">' + leg + '</div>';
+        }
+
+        function pm(t) { const [h, m] = (t || '00:00').split(':').map(Number); return h * 60 + m; }
+
+        function genMock() {
+            if (getRecords().length > 0) return;
+            const cats = ['工作', '学习', '阅读', '运动', '创作', '社交', '休息', '其他'];
+            const acts = { '工作': ['编码', '会议', '文档'], '学习': ['课程', '练习', '笔记'], '阅读': ['书籍', '文章', '论文'], '运动': ['跑步', '瑜伽', '骑行'], '创作': ['写作', '绘画', '摄影'], '社交': ['聚会', '电话', '聊天'], '休息': ['午休', '冥想', '散步'], '其他': ['通勤', '家务', '杂事'] };
+            const records = [];
+            const now = new Date();
+            const sd = new Date(now);
+            sd.setDate(sd.getDate() - 28);
+            for (let d = new Date(sd); d <= now; d.setDate(d.getDate() + 1)) {
+                const ds = d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+                const n = (d.getDay() === 0 || d.getDay() === 6) ? 2 + Math.floor(Math.random() * 4) : 4 + Math.floor(Math.random() * 5);
+                let cur = 6 + Math.floor(Math.random() * 2);
+                for (let i = 0; i < n; i++) {
+                    const cat = cats[Math.floor(Math.random() * cats.length)];
+                    const name = acts[cat][Math.floor(Math.random() * acts[cat].length)];
+                    const dur = (15 + Math.floor(Math.random() * 165)) * 60;
+                    const sh = cur, sm = Math.floor(Math.random() * 60);
+                    const end = sh * 60 + sm + Math.floor(dur / 60);
+                    const eh = Math.floor(end / 60) % 24, em = end % 60;
+                    if (eh >= 23) break;
+                    records.push({ id: Date.now() + Math.floor(Math.random() * 100000) + i, date: ds, start: String(sh).padStart(2, '0') + ':' + String(sm).padStart(2, '0'), end: String(eh).padStart(2, '0') + ':' + String(em).padStart(2, '0'), duration: dur, category: cat, name, created_at: ds + 'T' + String(sh).padStart(2, '0') + ':' + String(sm).padStart(2, '0') + ':00' });
+                    cur = eh + Math.floor((15 + Math.floor(Math.random() * 105)) / 60);
+                }
+            }
+            saveRecords(records);
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const m = String(now.getMonth() + 1).padStart(2, '0');
+            const d = String(now.getDate()).padStart(2, '0');
+            document.getElementById('todayDate').textContent = now.getFullYear() + '年' + m + '月' + d + '日 周' + days[now.getDay()];
+        }
+
+        genMock();
+        updateDate();
+        refresh();
+    </script>
+</body>
+
+</html>
