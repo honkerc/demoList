@@ -255,6 +255,19 @@
             position: relative;
         }
 
+        /* Selected time display above ruler */
+        .picker-selected {
+            font-size: 80px;
+            font-weight: 900;
+            font-family: inherit;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 4px;
+            color: var(--accent);
+            line-height: 1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
         /* Caliper ruler - full height, centered */
         .picker-ruler-wrap {
             flex: 1;
@@ -268,6 +281,28 @@
             user-select: none;
             -webkit-user-select: none;
             touch-action: none;
+        }
+
+        /* Edge fade masks */
+        .picker-ruler-wrap::before,
+        .picker-ruler-wrap::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            width: 60px;
+            height: 100%;
+            z-index: 20;
+            pointer-events: none;
+        }
+
+        .picker-ruler-wrap::before {
+            left: 0;
+            background: linear-gradient(to right, rgb(252, 239, 222), transparent);
+        }
+
+        .picker-ruler-wrap::after {
+            right: 0;
+            background: linear-gradient(to left, rgb(252, 239, 222), transparent);
         }
 
         .picker-ruler {
@@ -770,6 +805,7 @@
         <!-- Time Picker (Fullscreen Minimal Caliper) -->
         <div class="time-picker-overlay" id="timePickerOverlay">
             <div class="time-picker" id="timePicker">
+                <div class="picker-selected" id="pickerSelected">25:00</div>
                 <div class="picker-ruler-wrap">
                     <div class="picker-ruler" id="pickerRuler"></div>
                 </div>
@@ -865,6 +901,9 @@
                 const mins = parseInt(closest.dataset.minutes);
                 timerTotal = mins * 60;
                 timerRemain = timerTotal;
+                const m = Math.floor(timerTotal / 60);
+                const s = timerTotal % 60;
+                document.getElementById('pickerSelected').textContent = String(m).padStart(2, '0') + ':' + String(s).padStart(2, '0');
             }
         }
 
