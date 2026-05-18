@@ -476,35 +476,34 @@
             align-items: center;
             gap: 8px;
             width: 100%;
-            padding: 12px 14px;
-            border: 1px solid var(--line);
-            background: var(--card);
-            font-size: 14px;
-            font-weight: 700;
+            padding: 14px 16px;
+            border: none;
+            background: rgb(248, 244, 239);
+            font-size: 15px;
+            font-weight: 800;
             font-family: inherit;
             color: var(--text);
             cursor: pointer;
-            border-radius: 12px;
-            transition: all 0.2s;
+            border-radius: 16px;
+            transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
             text-align: left;
         }
 
         .drawer .drawer-options button:hover {
-            border-color: var(--accent);
+            transform: scale(0.97);
         }
 
         .drawer .drawer-options button .d {
-            width: 10px;
-            height: 10px;
-            border-radius: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
             flex-shrink: 0;
-            transition: all 0.2s;
+            transition: all 0.25s;
         }
 
         .drawer .drawer-options button.on,
         .drawer .drawer-options button:hover {
             color: #fff;
-            border-color: transparent;
         }
 
         .drawer .drawer-options button.on .d,
@@ -513,47 +512,37 @@
         }
 
         .drawer .drawer-new {
-            display: flex;
-            gap: 8px;
-            margin-top: 12px;
-            padding-top: 12px;
-            border-top: 1px solid var(--line);
-        }
-
-        .drawer .drawer-new input {
-            flex: 1;
-            padding: 10px 14px;
-            border: 1px solid var(--line);
-            border-radius: 10px;
-            font-size: 14px;
-            font-weight: 600;
-            font-family: inherit;
-            background: var(--soft);
-            color: var(--text);
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        .drawer .drawer-new input:focus {
-            border-color: var(--accent);
+            margin-top: 8px;
         }
 
         .drawer .drawer-new button {
-            padding: 10px 18px;
-            border: none;
-            background: var(--accent);
-            color: #fff;
-            font-size: 14px;
-            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px dashed var(--line);
+            background: none;
+            font-size: 15px;
+            font-weight: 800;
             font-family: inherit;
-            border-radius: 10px;
+            color: var(--text3);
             cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
+            border-radius: 16px;
+            transition: all 0.25s;
+            text-align: left;
         }
 
-        .drawer .drawer-new button:active {
-            transform: scale(0.96);
+        .drawer .drawer-new button:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 4%, transparent);
+        }
+
+        .drawer .drawer-new button .plus {
+            font-size: 18px;
+            font-weight: 900;
+            line-height: 1;
         }
 
         /* ===== Nav ===== */
@@ -655,8 +644,9 @@
             <div class="drawer-title">选择活动</div>
             <div class="drawer-options" id="drawerOptions"></div>
             <div class="drawer-new">
-                <input type="text" id="newTagInput" placeholder="新建标签" maxlength="10">
-                <button onclick="addNewTag()">新建</button>
+                <button onclick="addNewTag()">
+                    <span class="plus">+</span> 新建标签
+                </button>
             </div>
         </div>
 
@@ -699,13 +689,13 @@
         /* ===== Tag Drawer ===== */
         const defaultTags = [
             { name: '专注', cat: '工作', color: 'var(--c1)' },
-            { name: '编码', cat: '工作', color: 'var(--c1)' },
+            { name: '编码', cat: '工作', color: 'var(--c11)' },
             { name: '阅读', cat: '阅读', color: 'var(--c3)' },
             { name: '写作', cat: '创作', color: 'var(--c5)' },
             { name: '绘画', cat: '创作', color: 'var(--c9)' },
             { name: '课程', cat: '学习', color: 'var(--c2)' },
             { name: '笔记', cat: '学习', color: 'var(--c13)' },
-            { name: '冥想', cat: '休息', color: 'var(--c11)' },
+            { name: '冥想', cat: '休息', color: 'var(--c12)' },
             { name: '运动', cat: '运动', color: 'var(--c4)' },
             { name: '会议', cat: '工作', color: 'var(--c10)' },
         ];
@@ -743,8 +733,6 @@
             });
             document.getElementById('drawerOverlay').classList.add('open');
             document.getElementById('drawer').classList.add('open');
-            document.getElementById('newTagInput').value = '';
-            document.getElementById('newTagInput').focus();
         }
 
         function closeDrawer() {
@@ -759,17 +747,17 @@
         }
 
         function addNewTag() {
-            const input = document.getElementById('newTagInput');
-            const name = input.value.trim();
-            if (!name) return;
+            const name = prompt('输入新标签名称：');
+            if (!name || !name.trim()) return;
+            const n = name.trim();
             const tags = getTags();
-            if (tags.find(t => t.name === name)) { selectTag(name); return; }
+            if (tags.find(t => t.name === n)) { selectTag(n); return; }
             const colors = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)', 'var(--c5)', 'var(--c6)', 'var(--c7)', 'var(--c8)', 'var(--c9)', 'var(--c10)', 'var(--c11)', 'var(--c12)', 'var(--c13)', 'var(--c14)', 'var(--c15)', 'var(--c16)'];
             const usedColors = new Set(tags.map(t => t.color));
             let color = colors.find(c => !usedColors.has(c)) || 'var(--c16)';
-            tags.push({ name, cat: '其他', color });
+            tags.push({ name: n, cat: '其他', color });
             saveTags(tags);
-            selectTag(name);
+            selectTag(n);
         }
 
         /* ===== Focus Timer ===== */
