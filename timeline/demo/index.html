@@ -287,14 +287,14 @@
             -ms-touch-action: pan-x;
         }
 
-        /* Center reference line - same width as major tick, slightly taller */
+        /* Center reference line - top-aligned with ticks, 6x50px */
         .picker-center-line {
             position: absolute;
-            top: 50%;
+            top: 0;
             left: 50%;
-            transform: translate(-50%, -50%);
-            width: 12px;
-            height: 70px;
+            transform: translateX(-50%);
+            width: 6px;
+            height: 50px;
             background: var(--picker-accent);
             border-radius: 999px;
             z-index: 15;
@@ -336,7 +336,7 @@
         .picker-ruler .tick.major {
             width: 6px;
             background: rgb(179, 174, 161);
-            height: 60px;
+            height: 45px;
         }
 
         /* Label below major tick */
@@ -364,7 +364,7 @@
 
         .picker-ruler .tick.major.selected {
             width: 6px;
-            height: 60px;
+            height: 45px;
         }
 
         .picker-ruler .tick.selected .tick-label {
