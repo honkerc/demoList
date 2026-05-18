@@ -1,0 +1,234 @@
+# TimeLine 示例数据
+# 柳比歇夫时间管理法 · 数据格式
+
+version: "1.0"
+user: "Clay"
+created_at: "2026-05-18"
+
+# ===== 分类定义 =====
+categories:
+  - id: work
+    name: 工作
+    icon: 💼
+    color: "#007AFF"
+    tags:
+      - 编码
+      - 会议
+      - 文档
+      - 设计
+
+  - id: study
+    name: 学习
+    icon: 📚
+    color: "#34C759"
+    tags:
+      - 课程
+      - 实践
+      - 笔记整理
+
+  - id: reading
+    name: 阅读
+    icon: 📖
+    color: "#5856D6"
+    tags:
+      - 技术书籍
+      - 人文社科
+      - 文章
+
+  - id: sport
+    name: 运动
+    icon: 🏃
+    color: "#FF3B30"
+    tags:
+      - 跑步
+      - 力量训练
+      - 瑜伽
+
+  - id: creation
+    name: 创作
+    icon: 🎨
+    color: "#FF2D55"
+    tags:
+      - 写作
+      - 绘画
+      - 音乐
+
+  - id: social
+    name: 社交
+    icon: 💬
+    color: "#FF9500"
+    tags:
+      - 朋友聚会
+      - 家庭时间
+      - 网络社交
+
+  - id: rest
+    name: 休息
+    icon: ☕
+    color: "#FF9500"
+    tags:
+      - 午休
+      - 冥想
+      - 散步
+
+  - id: other
+    name: 其他
+    icon: 📌
+    color: "#C7C7CC"
+    tags:
+      - 通勤
+      - 家务
+      - 杂事
+
+# ===== 每日目标 =====
+goals:
+  daily_focus: 8h       # 每日专注目标
+  weekly_reading: 5h    # 每周阅读目标
+  weekly_sport: 3h      # 每周运动目标
+
+# ===== 时间记录 =====
+# 格式说明：
+#   date: 日期
+#   activities: 活动列表
+#     - start: 开始时间 (HH:MM)
+#       end: 结束时间 (HH:MM)
+#       category: 分类ID
+#       tag: 标签
+#       description: 活动描述
+#       note: 备注（可选）
+
+records:
+  - date: "2026-05-18"
+    day_of_week: "星期一"
+    summary:
+      total_time: "6h 30m"
+      activity_count: 6
+      utilization: 87%
+    activities:
+      - start: "07:00"
+        end: "07:30"
+        category: sport
+        tag: 跑步
+        description: "晨跑 5km"
+        note: "配速 5'30''，状态良好"
+
+      - start: "09:00"
+        end: "12:00"
+        category: work
+        tag: 编码
+        description: "开发 TimeLine 记录页"
+        note: "完成计时器核心逻辑"
+
+      - start: "12:00"
+        end: "13:00"
+        category: rest
+        tag: 午休
+        description: "午餐 + 休息"
+
+      - start: "13:00"
+        end: "14:30"
+        category: work
+        tag: 会议
+        description: "团队周会"
+        note: "讨论下周迭代计划"
+
+      - start: "14:30"
+        end: "16:15"
+        category: work
+        tag: 编码
+        description: "开发 TimeLine 看板页"
+        note: "完成柱状图和环形图"
+
+      - start: "17:00"
+        end: "17:45"
+        category: reading
+        tag: 人文社科
+        description: "读书《原子习惯》"
+        note: "第 4 章 · 让习惯显而易见"
+
+  - date: "2026-05-17"
+    day_of_week: "星期日"
+    summary:
+      total_time: "3h 20m"
+      activity_count: 4
+      utilization: 45%
+    activities:
+      - start: "09:00"
+        end: "10:00"
+        category: reading
+        tag: 技术书籍
+        description: "阅读《设计模式》"
+        note: "工厂模式章节"
+
+      - start: "14:00"
+        end: "15:30"
+        category: creation
+        tag: 写作
+        description: "写博客文章"
+        note: "关于时间管理的思考"
+
+      - start: "16:00"
+        end: "16:50"
+        category: sport
+        tag: 瑜伽
+        description: "瑜伽练习"
+
+      - start: "20:00"
+        end: "21:00"
+        category: social
+        tag: 家庭时间
+        description: "和家人视频通话"
+
+  - date: "2026-05-16"
+    day_of_week: "星期六"
+    summary:
+      total_time: "4h 00m"
+      activity_count: 5
+      utilization: 55%
+    activities:
+      - start: "08:00"
+        end: "09:00"
+        category: sport
+        tag: 跑步
+        description: "周末晨跑 8km"
+
+      - start: "10:00"
+        end: "12:00"
+        category: study
+        tag: 课程
+        description: "学习 FastAPI 教程"
+        note: "完成异步数据库部分"
+
+      - start: "14:00"
+        end: "15:00"
+        category: rest
+        tag: 散步
+        description: "公园散步"
+
+      - start: "15:30"
+        end: "16:30"
+        category: reading
+        tag: 人文社科
+        description: "读书《原子习惯》"
+        note: "第 3 章"
+
+      - start: "20:00"
+        end: "21:00"
+        category: social
+        tag: 朋友聚会
+        description: "和朋友聚餐"
+
+# ===== GitHub 同步配置 =====
+github:
+  enabled: true
+  repository: "clay/timeline-data"
+  branch: "main"
+  auto_commit:
+    enabled: true
+    time: "23:00"           # 每日自动提交时间
+    timezone: "Asia/Shanghai"
+  data_format: "yaml"       # yaml / json
+  actions:
+    - weekly_report         # 自动生成周报
+    - monthly_report        # 自动生成月报
+    - trend_analysis        # 趋势分析

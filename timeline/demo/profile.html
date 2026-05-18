@@ -1,0 +1,484 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>我的 - TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f8f6f3;
+            --card: #ffffff;
+            --text: #1a1a1e;
+            --text2: #6b6b76;
+            --text3: #9a9aa6;
+            --line: #e8e6e1;
+            --soft: #f0eee9;
+            --accent: #5b5bd6;
+            --c1: #5b5bd6;
+            --c2: #3b8fe0;
+            --c3: #4cb782;
+            --c4: #d4a04a;
+            --c5: #e07b5b;
+            --c6: #b877c9;
+            --c7: #6bb5b5;
+            --c8: #9a9aa6;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px
+        }
+
+        html.dark {
+            --bg: #121214;
+            --card: #1e1e22;
+            --text: #f0f0f2;
+            --text2: #9a9aa6;
+            --text3: #6b6b76;
+            --line: #2a2a2e;
+            --soft: #252529;
+            --accent: #7c7ce0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative
+        }
+
+        .header {
+            padding: 52px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start
+        }
+
+        .header .left .date {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text3);
+            letter-spacing: .8px;
+            text-transform: uppercase
+        }
+
+        .header .left .greeting {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            color: var(--text);
+            margin-top: 6px
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 20px 100px;
+            overflow-y: auto
+        }
+
+        .content::-webkit-scrollbar {
+            display: none
+        }
+
+        /* Profile Card */
+        .profile-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 24px;
+            margin: 24px 0 16px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line);
+            text-align: center
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--c1), var(--c4));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 12px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #fff;
+            box-shadow: 0 4px 16px rgba(91, 91, 214, .25)
+        }
+
+        .profile-name {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .profile-bio {
+            font-size: 12px;
+            color: var(--text3);
+            margin-top: 4px;
+            font-weight: 500
+        }
+
+        /* Stats */
+        .profile-stats {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .profile-stat {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 12px;
+            text-align: center;
+            border: 1px solid var(--line)
+        }
+
+        .profile-stat .v {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .profile-stat .l {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 2px;
+            font-weight: 600
+        }
+
+        /* Section */
+        .section-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin-bottom: 12px;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line)
+        }
+
+        .section-card .st {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            text-transform: uppercase
+        }
+
+        /* Setting Item */
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid var(--line)
+        }
+
+        .setting-item:last-child {
+            border-bottom: none
+        }
+
+        .setting-left {
+            display: flex;
+            align-items: center;
+            gap: 10px
+        }
+
+        .setting-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            flex-shrink: 0
+        }
+
+        .setting-label {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text)
+        }
+
+        .setting-desc {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 1px;
+            font-weight: 500
+        }
+
+        /* Toggle */
+        .toggle {
+            width: 44px;
+            height: 26px;
+            border-radius: 13px;
+            background: var(--line);
+            cursor: pointer;
+            position: relative;
+            transition: all .3s;
+            flex-shrink: 0
+        }
+
+        .toggle.on {
+            background: var(--accent)
+        }
+
+        .toggle .knob {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #fff;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all .3s cubic-bezier(.25, .1, .25, 1);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, .15)
+        }
+
+        .toggle.on .knob {
+            left: 20px
+        }
+
+        /* Badge */
+        .badge {
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 999px;
+            background: color-mix(in srgb, var(--accent) 10%, transparent);
+            color: var(--accent)
+        }
+
+        /* Danger */
+        .danger-btn {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .25s;
+            background: color-mix(in srgb, var(--c5) 10%, transparent);
+            color: var(--c5)
+        }
+
+        .danger-btn:hover {
+            background: color-mix(in srgb, var(--c5) 20%, transparent)
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: color-mix(in srgb, var(--card) 88%, transparent);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            padding: 6px 16px 24px;
+            z-index: 100;
+            gap: 2px
+        }
+
+        .nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 8px 0;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all .2s
+        }
+
+        .nav a:hover {
+            background: var(--soft)
+        }
+
+        .nav a.on {
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent)
+        }
+
+        @media(min-width:768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+                overflow: hidden;
+                box-shadow: var(--shadow-lg)
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="left">
+                <div class="date" id="todayDate"></div>
+                <div class="greeting">我的</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="profile-card">
+                <div class="profile-avatar">T</div>
+                <div class="profile-name">TimeLine</div>
+                <div class="profile-bio">柳比歇夫时间管理法 · 记录每一刻</div>
+            </div>
+            <div class="profile-stats">
+                <div class="profile-stat">
+                    <div class="v" id="totalDays">0</div>
+                    <div class="l">记录天数</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="v" id="totalHours">0h</div>
+                    <div class="l">累计时长</div>
+                </div>
+                <div class="profile-stat">
+                    <div class="v" id="totalRecords">0</div>
+                    <div class="l">总记录数</div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="st">偏好设置</div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c4) 15%,transparent);">🌙
+                        </div>
+                        <div>
+                            <div class="setting-label">深色模式</div>
+                            <div class="setting-desc">跟随系统或手动切换</div>
+                        </div>
+                    </div>
+                    <div class="toggle" id="darkToggle" onclick="toggleDark()">
+                        <div class="knob"></div>
+                    </div>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c3) 15%,transparent);">🎯
+                        </div>
+                        <div>
+                            <div class="setting-label">每日目标</div>
+                            <div class="setting-desc" id="goalDisplay">8 小时</div>
+                        </div>
+                    </div>
+                    <span class="badge" onclick="adjustGoal()">调整</span>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="st">关于</div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c1) 15%,transparent);">ℹ️
+                        </div>
+                        <div>
+                            <div class="setting-label">版本</div>
+                            <div class="setting-desc">v0.1.0 · 原型演示</div>
+                        </div>
+                    </div>
+                    <span class="badge">Demo</span>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c6) 15%,transparent);">📖
+                        </div>
+                        <div>
+                            <div class="setting-label">柳比歇夫时间管理法</div>
+                            <div class="setting-desc">记录 · 统计 · 分析 · 改进</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="section-card">
+                <div class="st">数据管理</div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c2) 15%,transparent);">📤
+                        </div>
+                        <div>
+                            <div class="setting-label">导出数据</div>
+                            <div class="setting-desc">JSON 格式备份</div>
+                        </div>
+                    </div>
+                    <span class="badge" onclick="exportData()" style="cursor:pointer">导出</span>
+                </div>
+                <div class="setting-item">
+                    <div class="setting-left">
+                        <div class="setting-icon" style="background:color-mix(in srgb,var(--c5) 15%,transparent);">🗑️
+                        </div>
+                        <div>
+                            <div class="setting-label">清除数据</div>
+                            <div class="setting-desc">删除所有本地记录</div>
+                        </div>
+                    </div>
+                    <span class="badge" onclick="clearData()"
+                        style="cursor:pointer;background:color-mix(in srgb,var(--c5) 15%,transparent);color:var(--c5)">清除</span>
+                </div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="index.html">记录</a><a href="tasks.html">任务</a><a href="timeline.html">时间线</a><a
+                href="dashboard.html">看板</a><a class="on" href="profile.html">我的</a>
+        </div>
+    </div>
+    <script>
+        (function () { const s = localStorage.getItem('timeline_theme'); const d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches; if (d) document.documentElement.classList.add('dark') })();
+        function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]') }
+        function fmt(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm' }
+        function updateStats() { const records = getRecords(); const daySet = new Set(); let totalSec = 0; records.forEach(r => { daySet.add(r.date); totalSec += r.duration }); document.getElementById('totalDays').textContent = daySet.size; document.getElementById('totalHours').textContent = fmt(totalSec); document.getElementById('totalRecords').textContent = records.length }
+        function toggleDark() { const html = document.documentElement; const isDark = html.classList.contains('dark'); if (isDark) { html.classList.remove('dark'); localStorage.setItem('timeline_theme', 'light') } else { html.classList.add('dark'); localStorage.setItem('timeline_theme', 'dark') } updateToggle() }
+        function updateToggle() { const isDark = document.documentElement.classList.contains('dark'); const toggle = document.getElementById('darkToggle'); if (isDark) toggle.classList.add('on'); else toggle.classList.remove('on') }
+        function adjustGoal() { const current = parseInt(localStorage.getItem('timeline_goal') || '8'); const val = prompt('每日目标（小时）：', current); if (val && !isNaN(val) && val > 0 && val <= 24) { localStorage.setItem('timeline_goal', val); document.getElementById('goalDisplay').textContent = val + ' 小时' } }
+        function exportData() { const data = { records: getRecords(), tasks: JSON.parse(localStorage.getItem('timeline_tasks') || '[]'), goal: localStorage.getItem('timeline_goal') || '8', exported_at: new Date().toISOString() }; const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' }); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href = url; a.download = 'timeline_backup_' + new Date().toISOString().slice(0, 10) + '.json'; a.click(); URL.revokeObjectURL(url) }
+        function clearData() { if (confirm('确定清除所有数据？此操作不可恢复！')) { localStorage.removeItem('timeline_records'); localStorage.removeItem('timeline_tasks'); updateStats(); alert('数据已清除') } }
+        function updateDate() { const now = new Date(); const days = ['日', '一', '二', '三', '四', '五', '六']; const m = String(now.getMonth() + 1).padStart(2, '0'); const d = String(now.getDate()).padStart(2, '0'); document.getElementById('todayDate').textContent = now.getFullYear() + '年' + m + '月' + d + '日 周' + days[now.getDay()] }
+        const goal = localStorage.getItem('timeline_goal') || '8'; document.getElementById('goalDisplay').textContent = goal + ' 小时'; updateToggle(); updateDate(); updateStats()
+    </script>
+</body>
+
+</html>

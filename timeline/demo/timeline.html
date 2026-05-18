@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>时间线 - TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f8f6f3;
+            --card: #ffffff;
+            --text: #1a1a1e;
+            --text2: #6b6b76;
+            --text3: #9a9aa6;
+            --line: #e8e6e1;
+            --soft: #f0eee9;
+            --accent: #5b5bd6;
+            --c1: #5b5bd6;
+            --c2: #3b8fe0;
+            --c3: #4cb782;
+            --c4: #d4a04a;
+            --c5: #e07b5b;
+            --c6: #b877c9;
+            --c7: #6bb5b5;
+            --c8: #9a9aa6;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px
+        }
+
+        html.dark {
+            --bg: #121214;
+            --card: #1e1e22;
+            --text: #f0f0f2;
+            --text2: #9a9aa6;
+            --text3: #6b6b76;
+            --line: #2a2a2e;
+            --soft: #252529;
+            --accent: #7c7ce0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3)
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative
+        }
+
+        .header {
+            padding: 52px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start
+        }
+
+        .header .left .date {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text3);
+            letter-spacing: .8px;
+            text-transform: uppercase
+        }
+
+        .header .left .greeting {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            color: var(--text);
+            margin-top: 6px
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 20px 100px;
+            overflow-y: auto
+        }
+
+        .content::-webkit-scrollbar {
+            display: none
+        }
+
+        /* Date Nav */
+        .date-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 24px 0 16px
+        }
+
+        .date-nav .nav-btn {
+            background: var(--card);
+            border: 1px solid var(--line);
+            font-size: 14px;
+            color: var(--text2);
+            cursor: pointer;
+            padding: 8px 14px;
+            transition: all .2s;
+            font-weight: 600;
+            border-radius: 999px;
+            font-family: inherit
+        }
+
+        .date-nav .nav-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent)
+        }
+
+        .date-nav .date-label {
+            font-size: 15px;
+            font-weight: 700;
+            text-align: center;
+            color: var(--text)
+        }
+
+        .date-nav .date-label .weekday {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text3);
+            display: block;
+            margin-top: 2px
+        }
+
+        /* Summary */
+        .summary-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 24px
+        }
+
+        .summary-item {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 12px;
+            text-align: center;
+            border: 1px solid var(--line)
+        }
+
+        .summary-item .value {
+            font-size: 20px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .summary-item .label {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 4px;
+            font-weight: 600
+        }
+
+        /* Timeline List */
+        .tl-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .tl-item {
+            display: flex;
+            align-items: stretch;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .tl-item:hover {
+            border-color: var(--accent)
+        }
+
+        .tl-item .tl-color {
+            width: 4px;
+            border-radius: 4px;
+            flex-shrink: 0
+        }
+
+        .tl-item .tl-body {
+            flex: 1;
+            min-width: 0
+        }
+
+        .tl-item .tl-time {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            font-variant-numeric: tabular-nums
+        }
+
+        .tl-item .tl-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 2px
+        }
+
+        .tl-item .tl-bottom {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 6px
+        }
+
+        .tl-item .tl-cat {
+            font-size: 10px;
+            font-weight: 700;
+            padding: 3px 10px;
+            border-radius: 999px;
+            color: #fff
+        }
+
+        .tl-item .tl-dur {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text2);
+            font-variant-numeric: tabular-nums
+        }
+
+        .tl-gap {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            padding: 4px 0;
+            letter-spacing: .5px
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--text3);
+            font-weight: 500
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: color-mix(in srgb, var(--card) 88%, transparent);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            padding: 6px 16px 24px;
+            z-index: 100;
+            gap: 2px
+        }
+
+        .nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 8px 0;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all .2s
+        }
+
+        .nav a:hover {
+            background: var(--soft)
+        }
+
+        .nav a.on {
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent)
+        }
+
+        @media(min-width:768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+                overflow: hidden;
+                box-shadow: var(--shadow-lg)
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="left">
+                <div class="date" id="todayDate"></div>
+                <div class="greeting">时间线</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="date-nav">
+                <button class="nav-btn" onclick="changeDate(-1)">←</button>
+                <div class="date-label" id="dateLabel">2026年5月18日<span class="weekday" id="weekdayLabel">星期一</span>
+                </div>
+                <button class="nav-btn" onclick="changeDate(1)">→</button>
+            </div>
+            <div class="summary-row" id="dailySummary">
+                <div class="summary-item">
+                    <div class="value" id="sumTotal">0h</div>
+                    <div class="label">总记录</div>
+                </div>
+                <div class="summary-item">
+                    <div class="value" id="sumCount">0</div>
+                    <div class="label">活动数</div>
+                </div>
+                <div class="summary-item">
+                    <div class="value" id="sumRate">0%</div>
+                    <div class="label">利用率</div>
+                </div>
+            </div>
+            <div class="tl-list" id="tlContainer">
+                <div class="empty-state">
+                    <p>暂无记录</p>
+                </div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="index.html">记录</a>
+            <a href="tasks.html">任务</a>
+            <a class="on" href="timeline.html">时间线</a>
+            <a href="dashboard.html">看板</a>
+            <a href="profile.html">我的</a>
+        </div>
+    </div>
+    <script>
+        (function () { const s = localStorage.getItem('timeline_theme'); const d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches; if (d) document.documentElement.classList.add('dark') })();
+        let currentDate = new Date();
+        function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]') }
+        function fmt(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm' }
+        function cc(cat) { const m = { '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)', '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)' }; return m[cat] || 'var(--text3)' }
+        function updateDateLabel() { const days = ['日', '一', '二', '三', '四', '五', '六']; const y = currentDate.getFullYear(); const m = currentDate.getMonth() + 1; const d = currentDate.getDate(); const w = days[currentDate.getDay()]; document.getElementById('dateLabel').innerHTML = y + '年' + m + '月' + d + '日'; document.getElementById('weekdayLabel').textContent = '周' + w; document.getElementById('todayDate').textContent = y + '年' + String(m).padStart(2, '0') + '月' + String(d).padStart(2, '0') + '日 周' + w }
+        function changeDate(delta) { currentDate.setDate(currentDate.getDate() + delta); updateDateLabel(); renderTimeline() }
+        function renderTimeline() {
+            const records = getRecords(); const dateStr = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0'); const dayRecords = records.filter(r => r.date === dateStr); dayRecords.sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00')); let totalSec = 0; dayRecords.forEach(r => totalSec += r.duration); const goal = 8 * 3600; const rate = goal > 0 ? Math.min(100, Math.round(totalSec / goal * 100)) : 0; document.getElementById('sumTotal').textContent = fmt(totalSec); document.getElementById('sumCount').textContent = dayRecords.length; document.getElementById('sumRate').textContent = rate + '%'; const container = document.getElementById('tlContainer'); if (dayRecords.length === 0) { container.innerHTML = '<div class="empty-state"><p>' + dateStr + ' 暂无记录</p></div>'; return }
+            let html = ''; let lastEnd = null; dayRecords.forEach((r, i) => { if (lastEnd && r.start) { if (lastEnd < r.start) { html += '<div class="tl-gap">' + lastEnd + ' — ' + r.start + '</div>' } } const color = cc(r.category); const catTag = '<span class="tl-cat" style="background:' + color + ';">' + r.category + '</span>'; html += '<div class="tl-item" onclick="deleteRecord(' + r.id + ')"><div class="tl-color" style="background:' + color + ';"></div><div class="tl-body"><div class="tl-time">' + (r.start || '--:--') + ' — ' + (r.end || '--:--') + '</div><div class="tl-name">' + r.name + '</div><div class="tl-bottom">' + catTag + '<span class="tl-dur">' + fmt(r.duration) + '</span></div></div></div>'; lastEnd = r.end || null }); container.innerHTML = html
+        }
+        function deleteRecord(id) { if (confirm('删除这条记录？')) { let records = getRecords(); records = records.filter(r => r.id !== id); localStorage.setItem('timeline_records', JSON.stringify(records)); renderTimeline() } }
+        updateDateLabel(); renderTimeline()
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+    <title>任务 - TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+        :root {
+            --bg: #f8f6f3;
+            --card: #ffffff;
+            --text: #1a1a1e;
+            --text2: #6b6b76;
+            --text3: #9a9aa6;
+            --line: #e8e6e1;
+            --soft: #f0eee9;
+            --accent: #5b5bd6;
+            --c1: #5b5bd6;
+            --c2: #3b8fe0;
+            --c3: #4cb782;
+            --c4: #d4a04a;
+            --c5: #e07b5b;
+            --c6: #b877c9;
+            --c7: #6bb5b5;
+            --c8: #9a9aa6;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.02);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.06);
+            --radius: 16px;
+            --radius-sm: 10px;
+        }
+
+        html.dark {
+            --bg: #121214;
+            --card: #1e1e22;
+            --text: #f0f0f2;
+            --text2: #9a9aa6;
+            --text3: #6b6b76;
+            --line: #2a2a2e;
+            --soft: #252529;
+            --accent: #7c7ce0;
+            --shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            --shadow-lg: 0 8px 32px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            position: relative
+        }
+
+        .header {
+            padding: 52px 20px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start
+        }
+
+        .header .left .date {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text3);
+            letter-spacing: .8px;
+            text-transform: uppercase
+        }
+
+        .header .left .greeting {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: -.5px;
+            color: var(--text);
+            margin-top: 6px
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 20px 100px;
+            overflow-y: auto
+        }
+
+        .content::-webkit-scrollbar {
+            display: none
+        }
+
+        /* Add Form */
+        .add-card {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 20px;
+            margin: 24px 0;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--line)
+        }
+
+        .add-card .label {
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: .5px;
+            margin-bottom: 10px
+        }
+
+        .add-row {
+            display: flex;
+            gap: 8px
+        }
+
+        .add-row input {
+            flex: 1;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-family: inherit;
+            background: var(--soft);
+            color: var(--text);
+            outline: none;
+            transition: all .2s
+        }
+
+        .add-row input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(91, 91, 214, .1);
+            background: var(--card)
+        }
+
+        .add-row input::placeholder {
+            color: var(--text3)
+        }
+
+        .add-row button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all .25s;
+            background: var(--accent);
+            color: #fff;
+            white-space: nowrap
+        }
+
+        .add-row button:hover {
+            opacity: .9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 16px rgba(91, 91, 214, .3)
+        }
+
+        .add-row button:active {
+            transform: scale(.98)
+        }
+
+        /* Stats */
+        .stats-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px
+        }
+
+        .stat-pill {
+            flex: 1;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 12px;
+            text-align: center;
+            border: 1px solid var(--line)
+        }
+
+        .stat-pill .v {
+            font-size: 18px;
+            font-weight: 800;
+            color: var(--text)
+        }
+
+        .stat-pill .l {
+            font-size: 10px;
+            color: var(--text3);
+            margin-top: 2px;
+            font-weight: 600
+        }
+
+        /* Task List */
+        .task-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px
+        }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: var(--card);
+            border-radius: var(--radius-sm);
+            padding: 14px 16px;
+            border: 1px solid var(--line);
+            cursor: pointer;
+            transition: all .2s
+        }
+
+        .task-item:hover {
+            border-color: var(--accent)
+        }
+
+        .task-item .check {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--line);
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all .3s cubic-bezier(.25, .1, .25, 1);
+            font-size: 11px;
+            color: transparent
+        }
+
+        .task-item.done .check {
+            background: var(--c3);
+            border-color: var(--c3);
+            color: #fff;
+            box-shadow: 0 2px 8px rgba(76, 183, 130, .3)
+        }
+
+        .task-item .body {
+            flex: 1;
+            min-width: 0
+        }
+
+        .task-item .body .name {
+            font-size: 14px;
+            font-weight: 600;
+            transition: all .3s
+        }
+
+        .task-item.done .body .name {
+            text-decoration: line-through;
+            color: var(--text3)
+        }
+
+        .task-item .body .meta {
+            font-size: 11px;
+            color: var(--text3);
+            margin-top: 2px;
+            font-weight: 500
+        }
+
+        .task-item .del {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            border: none;
+            background: none;
+            cursor: pointer;
+            font-size: 14px;
+            color: var(--text3);
+            transition: all .2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            opacity: 0
+        }
+
+        .task-item:hover .del {
+            opacity: 1
+        }
+
+        .task-item .del:hover {
+            background: color-mix(in srgb, var(--c5) 12%, transparent);
+            color: var(--c5)
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px
+        }
+
+        .empty-state p {
+            font-size: 14px;
+            color: var(--text3);
+            font-weight: 500
+        }
+
+        /* Nav */
+        .nav {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: color-mix(in srgb, var(--card) 88%, transparent);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--line);
+            display: flex;
+            padding: 6px 16px 24px;
+            z-index: 100;
+            gap: 2px
+        }
+
+        .nav a {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 3px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text3);
+            padding: 8px 0;
+            text-decoration: none;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 600;
+            transition: all .2s
+        }
+
+        .nav a:hover {
+            background: var(--soft)
+        }
+
+        .nav a.on {
+            color: var(--accent);
+            background: color-mix(in srgb, var(--accent) 8%, transparent)
+        }
+
+        @media(min-width:768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+                overflow: hidden;
+                box-shadow: var(--shadow-lg)
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="left">
+                <div class="date" id="todayDate"></div>
+                <div class="greeting">任务清单</div>
+            </div>
+        </div>
+        <div class="content">
+            <div class="add-card">
+                <div class="label">新任务</div>
+                <div class="add-row">
+                    <input type="text" id="taskInput" placeholder="输入任务内容..." maxlength="100">
+                    <button onclick="addTask()">添加</button>
+                </div>
+            </div>
+
+            <div class="stats-row">
+                <div class="stat-pill">
+                    <div class="v" id="totalTasks">0</div>
+                    <div class="l">全部</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="v" id="doneTasks">0</div>
+                    <div class="l">已完成</div>
+                </div>
+                <div class="stat-pill">
+                    <div class="v" id="pendingTasks">0</div>
+                    <div class="l">待完成</div>
+                </div>
+            </div>
+
+            <div class="task-list" id="taskList">
+                <div class="empty-state">
+                    <p>暂无任务，添加一个吧</p>
+                </div>
+            </div>
+        </div>
+        <div class="nav">
+            <a href="index.html">记录</a>
+            <a class="on" href="tasks.html">任务</a>
+            <a href="timeline.html">时间线</a>
+            <a href="dashboard.html">看板</a>
+            <a href="profile.html">我的</a>
+        </div>
+    </div>
+    <script>
+        (function () { const s = localStorage.getItem('timeline_theme'); const d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches; if (d) document.documentElement.classList.add('dark') })();
+        function getTasks() { return JSON.parse(localStorage.getItem('timeline_tasks') || '[]') }
+        function saveTasks(t) { localStorage.setItem('timeline_tasks', JSON.stringify(t)) }
+        function addTask() { const input = document.getElementById('taskInput'); const name = input.value.trim(); if (!name) { alert('请输入任务内容'); return } const tasks = getTasks(); tasks.push({ id: Date.now(), name, done: false, created_at: new Date().toISOString() }); saveTasks(tasks); input.value = ''; render() }
+        function toggleTask(id) { const tasks = getTasks(); const t = tasks.find(t => t.id === id); if (t) { t.done = !t.done; saveTasks(tasks); render() } }
+        function deleteTask(id) { let tasks = getTasks(); tasks = tasks.filter(t => t.id !== id); saveTasks(tasks); render() }
+        function render() {
+            const tasks = getTasks(); tasks.sort((a, b) => { if (a.done !== b.done) return a.done ? 1 : -1; return b.id - a.id }); const container = document.getElementById('taskList'); const total = tasks.length; const done = tasks.filter(t => t.done).length; document.getElementById('totalTasks').textContent = total; document.getElementById('doneTasks').textContent = done; document.getElementById('pendingTasks').textContent = total - done; if (tasks.length === 0) { container.innerHTML = '<div class="empty-state"><p>暂无任务，添加一个吧</p></div>'; return }
+            container.innerHTML = tasks.map(t => { const cls = t.done ? 'task-item done' : 'task-item'; const check = t.done ? '✓' : ''; const date = t.created_at ? t.created_at.slice(0, 10) : ''; return '<div class="' + cls + '" onclick="toggleTask(' + t.id + ')"><div class="check">' + check + '</div><div class="body"><div class="name">' + esc(t.name) + '</div><div class="meta">' + date + '</div></div><button class="del" onclick="event.stopPropagation();deleteTask(' + t.id + ')">✕</button></div>' }).join('')
+        }
+        function esc(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML }
+        function updateDate() { const now = new Date(); const days = ['日', '一', '二', '三', '四', '五', '六']; const m = String(now.getMonth() + 1).padStart(2, '0'); const d = String(now.getDate()).padStart(2, '0'); document.getElementById('todayDate').textContent = now.getFullYear() + '年' + m + '月' + d + '日 周' + days[now.getDay()] }
+        document.getElementById('taskInput').addEventListener('keydown', function (e) { if (e.key === 'Enter') addTask() }); updateDate(); render()
+    </script>
+</body>
+
+</html>

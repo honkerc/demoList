@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>记录 - TimeLine</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            height: 100%;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'SF Pro Display', sans-serif;
+            background: #0F0F1A;
+            color: #FFFFFF;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .app {
+            max-width: 420px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: linear-gradient(180deg, #0F0F1A 0%, #1A1A2E 100%);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        .header {
+            padding: 20px 24px 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: none;
+            border: none;
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            padding: 4px;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .back-btn:hover {
+            color: #FFFFFF;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+        }
+
+        .content {
+            flex: 1;
+            padding: 0 24px 100px;
+            overflow-y: auto;
+        }
+
+        .content::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* Timer Card */
+        .timer-card {
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.12), rgba(255, 101, 132, 0.08));
+            border-radius: 24px;
+            padding: 32px 24px;
+            text-align: center;
+            margin: 8px 0 20px;
+            border: 1px solid rgba(108, 99, 255, 0.15);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(108, 99, 255, 0.06), transparent 60%);
+            pointer-events: none;
+        }
+
+        .timer-status {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 1.5px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .timer-status.active {
+            color: #FF6584;
+        }
+
+        .timer-display {
+            font-size: 64px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            background: linear-gradient(135deg, #FFFFFF, rgba(255, 255, 255, 0.7));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-variant-numeric: tabular-nums;
+            margin: 4px 0;
+        }
+
+        .timer-activity {
+            font-size: 16px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 4px;
+        }
+
+        .timer-category {
+            display: inline-block;
+            font-size: 10px;
+            font-weight: 600;
+            color: #FFFFFF;
+            background: linear-gradient(135deg, #6C63FF, #FF6584);
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-top: 6px;
+            letter-spacing: 0.5px;
+        }
+
+        .timer-controls {
+            display: flex;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 28px;
+            position: relative;
+        }
+
+        .timer-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timer-btn:active {
+            transform: scale(0.9);
+        }
+
+        .timer-btn.primary {
+            width: 72px;
+            height: 72px;
+            font-size: 20px;
+            background: linear-gradient(135deg, #6C63FF, #FF6584);
+            color: #FFFFFF;
+            box-shadow: 0 8px 32px rgba(108, 99, 255, 0.4);
+        }
+
+        .timer-btn.primary:hover {
+            box-shadow: 0 12px 40px rgba(108, 99, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .timer-btn.primary.running {
+            background: linear-gradient(135deg, #FF6584, #FFB74D);
+            box-shadow: 0 8px 32px rgba(255, 101, 132, 0.4);
+        }
+
+        .timer-btn.secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: rgba(255, 255, 255, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .timer-btn.secondary:hover {
+            background: rgba(255, 255, 255, 0.12);
+            color: #FFFFFF;
+        }
+
+        .timer-btn:disabled {
+            opacity: 0.2;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        /* Preset durations */
+        .preset-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .preset-btn {
+            flex: 1;
+            min-width: 56px;
+            padding: 10px 6px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+
+        .preset-btn:hover {
+            border-color: rgba(108, 99, 255, 0.3);
+            background: rgba(108, 99, 255, 0.1);
+            color: #FFFFFF;
+        }
+
+        .preset-btn.active {
+            border-color: #6C63FF;
+            background: linear-gradient(135deg, rgba(108, 99, 255, 0.2), rgba(255, 101, 132, 0.1));
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(108, 99, 255, 0.2);
+        }
+
+        /* Categories */
+        .section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: rgba(255, 255, 255, 0.3);
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+        }
+
+        .category-row {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .cat-btn {
+            padding: 8px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.6);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .cat-btn:hover {
+            border-color: rgba(108, 99, 255, 0.3);
+            background: rgba(108, 99, 255, 0.1);
+            color: #FFFFFF;
+        }
+
+        .cat-btn.active {
+            border-color: #6C63FF;
+            background: linear-gradient(135deg, #6C63FF, #FF6584);
+            color: #FFFFFF;
+            box-shadow: 0 4px 16px rgba(108, 99, 255, 0.3);
+        }
+
+        /* Activity name input */
+        .name-input {
+            width: 100%;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            font-size: 14px;
+            color: #FFFFFF;
+            outline: none;
+            transition: all 0.3s;
+            margin-bottom: 16px;
+            font-family: inherit;
+        }
+
+        .name-input:focus {
+            border-color: rgba(108, 99, 255, 0.4);
+            background: rgba(108, 99, 255, 0.06);
+        }
+
+        .name-input::placeholder {
+            color: rgba(255, 255, 255, 0.25);
+        }
+
+        /* Recent list */
+        .recent-list {
+            margin-bottom: 24px;
+        }
+
+        .recent-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 14px 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 14px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            margin-bottom: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .recent-item:hover {
+            background: rgba(108, 99, 255, 0.08);
+            border-color: rgba(108, 99, 255, 0.15);
+            transform: translateX(4px);
+        }
+
+        .recent-item:active {
+            transform: scale(0.98);
+        }
+
+        .recent-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .recent-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            box-shadow: 0 0 12px currentColor;
+        }
+
+        .recent-info .recent-name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .recent-info .recent-time {
+            font-size: 11px;
+            color: rgba(255, 255, 255, 0.35);
+            margin-top: 3px;
+        }
+
+        .recent-duration {
+            font-size: 13px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.5);
+            font-variant-numeric: tabular-nums;
+        }
+
+        /* Tab Bar */
+        .tab-bar {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            max-width: 420px;
+            background: rgba(15, 15, 26, 0.92);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid rgba(255, 255, 255, 0.06);
+            display: flex;
+            padding: 8px 0 24px;
+            z-index: 100;
+        }
+
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s;
+            padding: 6px 0;
+            text-decoration: none;
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        .tab-item.active {
+            color: #6C63FF;
+        }
+
+        .tab-item .tab-icon {
+            font-size: 20px;
+            line-height: 1;
+            transition: transform 0.3s;
+        }
+
+        .tab-item.active .tab-icon {
+            transform: scale(1.1);
+        }
+
+        .tab-item .tab-label {
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 0.3px;
+        }
+
+        @media (min-width: 768px) {
+            .app {
+                margin: 20px auto;
+                min-height: 90vh;
+                border-radius: 28px;
+            }
+
+            .tab-bar {
+                border-radius: 0 0 28px 28px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="app">
+        <div class="header">
+            <div class="header-left">
+                <button class="back-btn" onclick="location.href='index.html'">←</button>
+                <h1>记录</h1>
+            </div>
+        </div>
+        <div class="content">
+            <!-- Timer Card -->
+            <div class="timer-card">
+                <div class="timer-status" id="timerStatus">READY</div>
+                <div class="timer-display" id="timerDisplay">00:00:00</div>
+                <div class="timer-activity" id="timerActivity">选择活动开始记录</div>
+                <div class="timer-category" id="timerCategory" style="display:none;">工作</div>
+                <div class="timer-controls">
+                    <button class="timer-btn secondary" id="btnReset" disabled>↺</button>
+                    <button class="timer-btn primary" id="btnToggle">▶</button>
+                    <button class="timer-btn secondary" id="btnStop" disabled>■</button>
+                </div>
+            </div>
+
+            <!-- Activity Name -->
+            <input class="name-input" id="activityName" type="text" placeholder="输入活动名称" maxlength="50">
+
+            <!-- Preset Durations -->
+            <div class="section-title">预设时长</div>
+            <div class="preset-row" id="presetRow">
+                <button class="preset-btn" data-minutes="5">5m</button>
+                <button class="preset-btn" data-minutes="15">15m</button>
+                <button class="preset-btn" data-minutes="30">30m</button>
+                <button class="preset-btn" data-minutes="45">45m</button>
+                <button class="preset-btn" data-minutes="60">1h</button>
+                <button class="preset-btn" data-minutes="90">1.5h</button>
+                <button class="preset-btn" data-minutes="120">2h</button>
+            </div>
+
+            <!-- Categories -->
+            <div class="section-title">活动类别</div>
+            <div class="category-row" id="categoryRow">
+                <button class="cat-btn" data-category="工作">工作</button>
+                <button class="cat-btn" data-category="学习">学习</button>
+                <button class="cat-btn" data-category="阅读">阅读</button>
+                <button class="cat-btn" data-category="运动">运动</button>
+                <button class="cat-btn" data-category="创作">创作</button>
+                <button class="cat-btn" data-category="社交">社交</button>
+                <button class="cat-btn" data-category="休息">休息</button>
+                <button class="cat-btn" data-category="其他">其他</button>
+            </div>
+
+            <!-- Recent Records -->
+            <div class="section-title">最近记录</div>
+            <div class="recent-list" id="recentList">
+                <div style="text-align:center;padding:30px;color:rgba(255,255,255,0.2);font-size:13px;">暂无记录</div>
+            </div>
+        </div>
+
+        <div class="tab-bar">
+            <a class="tab-item active" href="record.html">
+                <span class="tab-icon">◉</span>
+                <span class="tab-label">记录</span>
+            </a>
+            <a class="tab-item" href="timeline.html">
+                <span class="tab-icon">≡</span>
+                <span class="tab-label">时间线</span>
+            </a>
+            <a class="tab-item" href="dashboard.html">
+                <span class="tab-icon">◆</span>
+                <span class="tab-label">看板</span>
+            </a>
+            <a class="tab-item" href="profile.html">
+                <span class="tab-icon">●</span>
+                <span class="tab-label">我的</span>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        let isRunning = false;
+        let seconds = 0;
+        let timerInterval = null;
+        let selectedCategory = null;
+        let presetMinutes = 0;
+
+        const display = document.getElementById('timerDisplay');
+        const status = document.getElementById('timerStatus');
+        const activity = document.getElementById('timerActivity');
+        const category = document.getElementById('timerCategory');
+        const btnToggle = document.getElementById('btnToggle');
+        const btnReset = document.getElementById('btnReset');
+        const btnStop = document.getElementById('btnStop');
+        const activityName = document.getElementById('activityName');
+
+        function formatTime(s) {
+            const h = String(Math.floor(s / 3600)).padStart(2, '0');
+            const m = String(Math.floor((s % 3600) / 60)).padStart(2, '0');
+            const sec = String(s % 60).padStart(2, '0');
+            return h + ':' + m + ':' + sec;
+        }
+
+        function formatDuration(s) {
+            const h = Math.floor(s / 3600);
+            const m = Math.floor((s % 3600) / 60);
+            if (h > 0) return h + 'h ' + m + 'm';
+            return m + 'm';
+        }
+
+        function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]'); }
+        function saveRecords(records) { localStorage.setItem('timeline_records', JSON.stringify(records)); }
+        function getToday() { return new Date().toISOString().slice(0, 10); }
+        function getNow() {
+            const d = new Date();
+            return String(d.getHours()).padStart(2, '0') + ':' + String(d.getMinutes()).padStart(2, '0');
+        }
+
+        function updateDisplay() { display.textContent = formatTime(seconds); }
+
+        function toggleTimer() {
+            if (!isRunning) {
+                const name = activityName.value.trim();
+                if (!name && !selectedCategory) { alert('请输入活动名称或选择类别'); return; }
+                if (!selectedCategory) { alert('请选择一个活动类别'); return; }
+                isRunning = true;
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    updateDisplay();
+                    if (presetMinutes > 0 && seconds >= presetMinutes * 60) stopTimer();
+                }, 1000);
+                btnToggle.textContent = '⏸';
+                btnToggle.classList.add('running');
+                status.textContent = '● RECORDING';
+                status.classList.add('active');
+                btnReset.disabled = true;
+                btnStop.disabled = false;
+                activityName.disabled = true;
+            } else {
+                isRunning = false;
+                clearInterval(timerInterval);
+                btnToggle.textContent = '▶';
+                btnToggle.classList.remove('running');
+                status.textContent = '⏸ PAUSED';
+                status.classList.remove('active');
+                btnReset.disabled = false;
+            }
+        }
+
+        function stopTimer() {
+            if (seconds < 10) { alert('记录时长太短'); return; }
+            const name = activityName.value.trim() || selectedCategory;
+            const now = getNow();
+            const startTime = calculateStartTime(now, seconds);
+            const record = {
+                id: Date.now(),
+                date: getToday(),
+                start: startTime,
+                end: now,
+                duration: seconds,
+                category: selectedCategory,
+                name: name,
+                created_at: new Date().toISOString()
+            };
+            const records = getRecords();
+            records.push(record);
+            saveRecords(records);
+            alert('✓ 已记录: ' + name + ' (' + formatDuration(seconds) + ')');
+            resetTimer();
+            renderRecent();
+        }
+
+        function calculateStartTime(end, dur) {
+            const parts = end.split(':');
+            const totalMin = parseInt(parts[0]) * 60 + parseInt(parts[1]);
+            const startMin = totalMin - Math.floor(dur / 60);
+            const h = Math.floor(startMin / 60) % 24;
+            const m = startMin % 60;
+            return String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0');
+        }
+
+        function resetTimer() {
+            isRunning = false;
+            clearInterval(timerInterval);
+            seconds = 0; presetMinutes = 0;
+            updateDisplay();
+            btnToggle.textContent = '▶';
+            btnToggle.classList.remove('running');
+            status.textContent = 'READY';
+            status.classList.remove('active');
+            btnReset.disabled = true;
+            btnStop.disabled = true;
+            activityName.disabled = false;
+            activityName.value = '';
+            activity.textContent = '选择活动开始记录';
+            category.style.display = 'none';
+            selectedCategory = null;
+            document.querySelectorAll('.cat-btn').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.preset-btn').forEach(el => el.classList.remove('active'));
+        }
+
+        // Category Selection
+        document.querySelectorAll('.cat-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.cat-btn').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                selectedCategory = this.dataset.category;
+                category.textContent = selectedCategory;
+                category.style.display = 'inline-block';
+                if (!activityName.value.trim()) activity.textContent = selectedCategory;
+            });
+        });
+
+        // Preset Selection
+        document.querySelectorAll('.preset-btn').forEach(btn => {
+            btn.addEventListener('click', function () {
+                document.querySelectorAll('.preset-btn').forEach(el => el.classList.remove('active'));
+                this.classList.add('active');
+                presetMinutes = parseInt(this.dataset.minutes);
+                seconds = presetMinutes * 60;
+                updateDisplay();
+                if (!isRunning) {
+                    status.textContent = 'PRESET ' + (presetMinutes >= 60 ? (presetMinutes / 60) + 'h' : presetMinutes + 'm');
+                }
+            });
+        });
+
+        activityName.addEventListener('input', function () {
+            const val = this.value.trim();
+            if (val) activity.textContent = val;
+            else if (selectedCategory) activity.textContent = selectedCategory;
+            else activity.textContent = '选择活动开始记录';
+        });
+
+        function renderRecent() {
+            const records = getRecords();
+            const container = document.getElementById('recentList');
+            if (records.length === 0) {
+                container.innerHTML = '<div style="text-align:center;padding:30px;color:rgba(255,255,255,0.2);font-size:13px;">暂无记录</div>';
+                return;
+            }
+            const recent = records.slice(-10).reverse();
+            const catColors = {
+                '工作': '#6C63FF', '学习': '#00C875', '阅读': '#5856D6',
+                '运动': '#FF3B30', '创作': '#FF6584', '社交': '#FFB74D',
+                '休息': '#FF9500', '其他': '#8E8E93'
+            };
+            container.innerHTML = recent.map(r => {
+                const color = catColors[r.category] || '#8E8E93';
+                return '<div class="recent-item" onclick="quickRecord(\'' + r.name + '\',\'' + r.category + '\')">' +
+                    '<div class="recent-left">' +
+                    '<span class="recent-dot" style="background:' + color + ';color:' + color + ';"></span>' +
+                    '<div class="recent-info">' +
+                    '<div class="recent-name">' + r.name + '</div>' +
+                    '<div class="recent-time">' + r.date + ' ' + r.start + ' - ' + r.end + '</div>' +
+                    '</div></div>' +
+                    '<span class="recent-duration">' + formatDuration(r.duration) + '</span>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function quickRecord(name, cat) {
+            activityName.value = name;
+            selectedCategory = cat;
+            category.textContent = cat;
+            category.style.display = 'inline-block';
+            activity.textContent = name;
+            document.querySelectorAll('.cat-btn').forEach(el => {
+                el.classList.toggle('active', el.dataset.category === cat);
+            });
+            if (!isRunning) toggleTimer();
+        }
+
+        btnToggle.addEventListener('click', toggleTimer);
+        btnStop.addEventListener('click', stopTimer);
+        btnReset.addEventListener('click', resetTimer);
+        renderRecent();
+    </script>
+</body>
+
+</html>
