@@ -466,20 +466,20 @@
         }
 
         .drawer .drawer-options {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
         }
 
         .drawer .drawer-options button {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
             width: 100%;
-            padding: 14px 16px;
-            border: none;
-            background: none;
-            font-size: 16px;
+            padding: 12px 14px;
+            border: 1px solid var(--line);
+            background: var(--card);
+            font-size: 14px;
             font-weight: 700;
             font-family: inherit;
             color: var(--text);
@@ -490,19 +490,70 @@
         }
 
         .drawer .drawer-options button:hover {
-            background: var(--soft);
+            border-color: var(--accent);
         }
 
         .drawer .drawer-options button .d {
-            width: 12px;
-            height: 12px;
-            border-radius: 6px;
+            width: 10px;
+            height: 10px;
+            border-radius: 5px;
             flex-shrink: 0;
+            transition: all 0.2s;
         }
 
-        .drawer .drawer-options button.on {
-            background: color-mix(in srgb, var(--accent) 8%, transparent);
-            color: var(--accent);
+        .drawer .drawer-options button.on,
+        .drawer .drawer-options button:hover {
+            color: #fff;
+            border-color: transparent;
+        }
+
+        .drawer .drawer-options button.on .d,
+        .drawer .drawer-options button:hover .d {
+            background: #fff !important;
+        }
+
+        .drawer .drawer-new {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line);
+        }
+
+        .drawer .drawer-new input {
+            flex: 1;
+            padding: 10px 14px;
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
+            font-family: inherit;
+            background: var(--soft);
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .drawer .drawer-new input:focus {
+            border-color: var(--accent);
+        }
+
+        .drawer .drawer-new button {
+            padding: 10px 18px;
+            border: none;
+            background: var(--accent);
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            font-family: inherit;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .drawer .drawer-new button:active {
+            transform: scale(0.96);
         }
 
         /* ===== Nav ===== */
@@ -603,6 +654,10 @@
             <div class="drawer-handle"></div>
             <div class="drawer-title">选择活动</div>
             <div class="drawer-options" id="drawerOptions"></div>
+            <div class="drawer-new">
+                <input type="text" id="newTagInput" placeholder="新建标签" maxlength="10">
+                <button onclick="addNewTag()">新建</button>
+            </div>
         </div>
 
         <div class="nav">
@@ -642,7 +697,7 @@
         let currentTag = '专注';
 
         /* ===== Tag Drawer ===== */
-        const tagOptions = [
+        const defaultTags = [
             { name: '专注', cat: '工作', color: 'var(--c1)' },
             { name: '编码', cat: '工作', color: 'var(--c1)' },
             { name: '阅读', cat: '阅读', color: 'var(--c3)' },
@@ -655,18 +710,41 @@
             { name: '会议', cat: '工作', color: 'var(--c10)' },
         ];
 
+        function getTags() {
+            const saved = localStorage.getItem('timeline_tags');
+            if (saved) return JSON.parse(saved);
+            return defaultTags;
+        }
+
+        function saveTags(tags) {
+            localStorage.setItem('timeline_tags', JSON.stringify(tags));
+        }
+
+        function getTagColor(name) {
+            const tags = getTags();
+            const found = tags.find(t => t.name === name);
+            return found ? found.color : 'var(--text3)';
+        }
+
         function openDrawer() {
             const container = document.getElementById('drawerOptions');
+            const tags = getTags();
             container.innerHTML = '';
-            tagOptions.forEach(o => {
+            tags.forEach(o => {
                 const btn = document.createElement('button');
-                btn.className = o.name === currentTag ? 'on' : '';
+                const isOn = o.name === currentTag;
+                btn.className = isOn ? 'on' : '';
                 btn.innerHTML = '<span class="d" style="background:' + o.color + '"></span>' + o.name;
+                if (isOn) btn.style.background = o.color;
+                btn.onmouseenter = function () { if (!isOn) this.style.background = o.color; };
+                btn.onmouseleave = function () { if (!isOn) this.style.background = ''; };
                 btn.onclick = function () { selectTag(o.name); };
                 container.appendChild(btn);
             });
             document.getElementById('drawerOverlay').classList.add('open');
             document.getElementById('drawer').classList.add('open');
+            document.getElementById('newTagInput').value = '';
+            document.getElementById('newTagInput').focus();
         }
 
         function closeDrawer() {
@@ -678,6 +756,20 @@
             currentTag = name;
             document.getElementById('tagBtn').textContent = name + ' ▾';
             closeDrawer();
+        }
+
+        function addNewTag() {
+            const input = document.getElementById('newTagInput');
+            const name = input.value.trim();
+            if (!name) return;
+            const tags = getTags();
+            if (tags.find(t => t.name === name)) { selectTag(name); return; }
+            const colors = ['var(--c1)', 'var(--c2)', 'var(--c3)', 'var(--c4)', 'var(--c5)', 'var(--c6)', 'var(--c7)', 'var(--c8)', 'var(--c9)', 'var(--c10)', 'var(--c11)', 'var(--c12)', 'var(--c13)', 'var(--c14)', 'var(--c15)', 'var(--c16)'];
+            const usedColors = new Set(tags.map(t => t.color));
+            let color = colors.find(c => !usedColors.has(c)) || 'var(--c16)';
+            tags.push({ name, cat: '其他', color });
+            saveTags(tags);
+            selectTag(name);
         }
 
         /* ===== Focus Timer ===== */
