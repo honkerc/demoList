@@ -258,7 +258,7 @@
         .summary-row {
             display: flex;
             gap: 8px;
-            margin-bottom: 24px
+            margin-bottom: 20px
         }
 
         .summary-item {
@@ -283,88 +283,195 @@
             font-weight: 600
         }
 
-        /* Timeline List */
-        .tl-list {
-            display: flex;
-            flex-direction: column;
-            gap: 4px
+        /* ===== Timeline (hourly bars, like index) ===== */
+        .tl-section {
+            margin-bottom: 16px
         }
 
-        .tl-item {
+        .tl-header {
             display: flex;
-            align-items: stretch;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 14px
+        }
+
+        .tl-header .tl-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text3);
+            letter-spacing: 1px;
+            text-transform: uppercase
+        }
+
+        .tl-header .tl-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
             background: var(--card);
-            border-radius: var(--radius-sm);
-            padding: 16px;
             border: 1px solid var(--line);
+            padding: 5px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
             cursor: pointer;
+            font-family: inherit;
+            border-radius: 999px;
             transition: all .2s
         }
 
-        .tl-item:hover {
-            border-color: var(--accent)
+        .tl-header .tl-toggle:hover {
+            border-color: var(--accent);
+            color: var(--accent)
         }
 
-        .tl-item .tl-color {
-            width: 4px;
+        .tl-header .tl-toggle .dot {
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            background: var(--text3);
+            transition: all .2s
+        }
+
+        .tl-header .tl-toggle.on .dot {
+            background: var(--accent)
+        }
+
+        .tl-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2px
+        }
+
+        .tl-row {
+            display: flex;
+            align-items: stretch;
+            gap: 0;
+            min-height: 36px
+        }
+
+        .tl-row.hide {
+            display: none
+        }
+
+        .tl-row .tl-label {
+            width: 44px;
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text3);
+            text-align: right;
+            padding: 8px 10px 8px 0;
+            flex-shrink: 0;
+            align-self: flex-start;
+            line-height: 20px;
+            font-variant-numeric: tabular-nums
+        }
+
+        .tl-row .tl-bar {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            padding: 6px 0;
+            min-height: 24px
+        }
+
+        .tl-row .tl-track {
+            display: flex;
+            width: 100%;
+            height: 24px;
+            background: var(--soft);
+            border-radius: 6px;
+            overflow: hidden;
+            position: relative
+        }
+
+        .tl-row .tl-track .seg {
+            height: 100%;
+            cursor: pointer;
+            position: relative;
+            transition: all .25s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 3px
+        }
+
+        .tl-row .tl-track .seg:first-child {
+            border-radius: 6px 0 0 6px
+        }
+
+        .tl-row .tl-track .seg:last-child {
+            border-radius: 0 6px 6px 0
+        }
+
+        .tl-row .tl-track .seg:only-child {
+            border-radius: 6px
+        }
+
+        .tl-row .tl-track .seg:hover {
+            filter: brightness(1.1);
+            z-index: 2
+        }
+
+        .tl-row .tl-track .seg .t {
+            font-size: 10px;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+            pointer-events: none;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, .25)
+        }
+
+        .tl-row .tl-track .seg .tip {
+            display: none;
+            position: absolute;
+            bottom: calc(100% + 8px);
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card);
+            border: 1px solid var(--line);
+            border-radius: 10px;
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 600;
+            white-space: nowrap;
+            color: var(--text);
+            z-index: 10;
+            pointer-events: none;
+            box-shadow: var(--shadow-lg)
+        }
+
+        .tl-row .tl-track .seg:hover .tip {
+            display: block
+        }
+
+        .tl-legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+            padding-top: 12px;
+            border-top: 1px solid var(--line)
+        }
+
+        .tl-legend span {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 10px;
+            font-weight: 600;
+            color: var(--text2)
+        }
+
+        .tl-legend span .d {
+            width: 8px;
+            height: 8px;
             border-radius: 4px;
             flex-shrink: 0
         }
 
-        .tl-item .tl-body {
-            flex: 1;
-            min-width: 0
-        }
-
-        .tl-item .tl-time {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text3);
-            font-variant-numeric: tabular-nums
-        }
-
-        .tl-item .tl-name {
-            font-size: 15px;
-            font-weight: 700;
-            color: var(--text);
-            margin-top: 2px
-        }
-
-        .tl-item .tl-bottom {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 6px
-        }
-
-        .tl-item .tl-cat {
-            font-size: 10px;
-            font-weight: 700;
-            padding: 3px 10px;
-            border-radius: 999px;
-            color: #fff
-        }
-
-        .tl-item .tl-dur {
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text2);
-            font-variant-numeric: tabular-nums
-        }
-
-        .tl-gap {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--text3);
-            padding: 4px 0;
-            letter-spacing: .5px
-        }
-
         .empty-state {
             text-align: center;
-            padding: 60px 20px
+            padding: 40px 20px
         }
 
         .empty-state p {
@@ -465,10 +572,14 @@
                     <div class="label">利用率</div>
                 </div>
             </div>
-            <div class="tl-list" id="tlContainer">
-                <div class="empty-state">
-                    <p>暂无记录</p>
+            <div class="tl-section">
+                <div class="tl-header">
+                    <span class="tl-title">今日时间轴</span>
+                    <button class="tl-toggle on" id="toggleEmptyBtn" onclick="toggleEmptyHours()">
+                        <span class="dot"></span> 空白
+                    </button>
                 </div>
+                <div class="tl-grid" id="hourlyTimeline"></div>
             </div>
         </div>
         <div class="nav">
@@ -482,16 +593,96 @@
     <script>
         (function () { const s = localStorage.getItem('timeline_theme'); const d = s ? s === 'dark' : window.matchMedia('(prefers-color-scheme:dark)').matches; if (d) document.documentElement.classList.add('dark') })();
         let currentDate = new Date();
+        let showEmpty = true;
         function getRecords() { return JSON.parse(localStorage.getItem('timeline_records') || '[]') }
         function fmt(s) { const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); return h > 0 ? h + 'h ' + m + 'm' : m + 'm' }
-        function cc(cat) { const m = { '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)', '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)' }; return m[cat] || 'var(--text3)' }
-        function updateDateLabel() { const days = ['日', '一', '二', '三', '四', '五', '六']; const y = currentDate.getFullYear(); const m = currentDate.getMonth() + 1; const d = currentDate.getDate(); const w = days[currentDate.getDay()]; document.getElementById('dateLabel').innerHTML = y + '年' + m + '月' + d + '日'; document.getElementById('weekdayLabel').textContent = '周' + w; document.getElementById('todayDate').textContent = y + '年' + String(m).padStart(2, '0') + '月' + String(d).padStart(2, '0') + '日 周' + w }
-        function changeDate(delta) { currentDate.setDate(currentDate.getDate() + delta); updateDateLabel(); renderTimeline() }
-        function renderTimeline() {
-            const records = getRecords(); const dateStr = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0'); const dayRecords = records.filter(r => r.date === dateStr); dayRecords.sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00')); let totalSec = 0; dayRecords.forEach(r => totalSec += r.duration); const goal = 8 * 3600; const rate = goal > 0 ? Math.min(100, Math.round(totalSec / goal * 100)) : 0; document.getElementById('sumTotal').textContent = fmt(totalSec); document.getElementById('sumCount').textContent = dayRecords.length; document.getElementById('sumRate').textContent = rate + '%'; const container = document.getElementById('tlContainer'); if (dayRecords.length === 0) { container.innerHTML = '<div class="empty-state"><p>' + dateStr + ' 暂无记录</p></div>'; return }
-            let html = ''; let lastEnd = null; dayRecords.forEach((r, i) => { if (lastEnd && r.start) { if (lastEnd < r.start) { html += '<div class="tl-gap">' + lastEnd + ' — ' + r.start + '</div>' } } const color = cc(r.category); const catTag = '<span class="tl-cat" style="background:' + color + ';">' + r.category + '</span>'; html += '<div class="tl-item" onclick="deleteRecord(' + r.id + ')"><div class="tl-color" style="background:' + color + ';"></div><div class="tl-body"><div class="tl-time">' + (r.start || '--:--') + ' — ' + (r.end || '--:--') + '</div><div class="tl-name">' + r.name + '</div><div class="tl-bottom">' + catTag + '<span class="tl-dur">' + fmt(r.duration) + '</span></div></div></div>'; lastEnd = r.end || null }); container.innerHTML = html
+        function cc(cat) {
+            const m = {
+                '工作': 'var(--c1)', '学习': 'var(--c2)', '阅读': 'var(--c3)', '运动': 'var(--c4)',
+                '创作': 'var(--c5)', '社交': 'var(--c6)', '休息': 'var(--c7)', '其他': 'var(--c8)',
+                '编码': 'var(--c1)', '会议': 'var(--c10)', '文档': 'var(--c16)',
+                '课程': 'var(--c2)', '练习': 'var(--c11)', '笔记': 'var(--c13)',
+                '书籍': 'var(--c3)', '文章': 'var(--c14)', '论文': 'var(--c13)',
+                '跑步': 'var(--c4)', '瑜伽': 'var(--c12)', '骑行': 'var(--c11)',
+                '写作': 'var(--c5)', '绘画': 'var(--c9)', '摄影': 'var(--c10)',
+                '聚会': 'var(--c6)', '电话': 'var(--c9)', '聊天': 'var(--c14)',
+                '午休': 'var(--c7)', '冥想': 'var(--c11)', '散步': 'var(--c13)',
+                '通勤': 'var(--c8)', '家务': 'var(--c12)', '杂事': 'var(--c16)'
+            };
+            return m[cat] || 'var(--text3)';
         }
-        function deleteRecord(id) { if (confirm('删除这条记录？')) { let records = getRecords(); records = records.filter(r => r.id !== id); localStorage.setItem('timeline_records', JSON.stringify(records)); renderTimeline(); renderCalendar() } }
+        function pm(t) { const [h, m] = (t || '00:00').split(':').map(Number); return h * 60 + m }
+        function updateDateLabel() { const days = ['日', '一', '二', '三', '四', '五', '六']; const y = currentDate.getFullYear(); const m = currentDate.getMonth() + 1; const d = currentDate.getDate(); const w = days[currentDate.getDay()]; document.getElementById('dateLabel').innerHTML = y + '年' + m + '月' + d + '日'; document.getElementById('weekdayLabel').textContent = '周' + w; document.getElementById('todayDate').textContent = y + '年' + String(m).padStart(2, '0') + '月' + String(d).padStart(2, '0') + '日 周' + w }
+        function changeDate(delta) { currentDate.setDate(currentDate.getDate() + delta); updateDateLabel(); renderTimeline(); renderCalendar() }
+
+        function toggleEmptyHours() {
+            showEmpty = !showEmpty;
+            const btn = document.getElementById('toggleEmptyBtn');
+            btn.classList.toggle('on');
+            btn.innerHTML = '<span class="dot"></span>' + (showEmpty ? '空白' : '隐藏');
+            renderTimeline();
+        }
+
+        function renderTimeline() {
+            const records = getRecords();
+            const dateStr = currentDate.getFullYear() + '-' + String(currentDate.getMonth() + 1).padStart(2, '0') + '-' + String(currentDate.getDate()).padStart(2, '0');
+            const dr = records.filter(r => r.date === dateStr).sort((a, b) => (a.start || '00:00').localeCompare(b.start || '00:00'));
+            let totalSec = 0; dr.forEach(r => totalSec += r.duration);
+            const goal = 8 * 3600; const rate = goal > 0 ? Math.min(100, Math.round(totalSec / goal * 100)) : 0;
+            document.getElementById('sumTotal').textContent = fmt(totalSec);
+            document.getElementById('sumCount').textContent = dr.length;
+            document.getElementById('sumRate').textContent = rate + '%';
+
+            const c = document.getElementById('hourlyTimeline');
+            const sh = 6, eh = 23;
+            let html = '';
+            for (let h = sh; h < eh; h++) {
+                const hs = h * 60, he = (h + 1) * 60;
+                const ov = dr.filter(r => { const rs = pm(r.start), re = pm(r.end); return rs < he && re > hs });
+                const empty = ov.length === 0;
+                const hc = (!showEmpty && empty) ? ' hide' : '';
+                html += '<div class="tl-row' + hc + '">';
+                html += '<span class="tl-label">' + h + ':00</span>';
+                html += '<div class="tl-bar">';
+                const segs = [];
+                ov.forEach(r => {
+                    const rs = Math.max(pm(r.start), hs); const re = Math.min(pm(r.end), he);
+                    if (re > rs) { segs.push({ start: rs, end: re, name: r.name, category: r.category }); }
+                });
+                segs.sort((a, b) => a.start - b.start);
+                html += '<div class="tl-track">';
+                segs.forEach(s => {
+                    const w = ((s.end - s.start) / 60) * 100;
+                    const durStr = fmt((s.end - s.start) * 60);
+                    html += '<div class="seg" style="width:' + w + '%;background:' + cc(s.category) + ';">';
+                    html += '<span class="t">' + durStr + '</span>';
+                    html += '<span class="tip">' + s.name + ' · ' + durStr + '</span></div>';
+                });
+                html += '</div></div></div>';
+            }
+            if (dr.length === 0) {
+                html = '<div class="empty-state"><p>' + dateStr + ' 暂无记录</p></div>';
+                c.innerHTML = html;
+                return;
+            }
+            let leg = '';
+            const usedNames = new Set();
+            dr.forEach(r => usedNames.add(r.name));
+            Array.from(usedNames).sort().forEach(name => {
+                leg += '<span><span class="d" style="background:' + cc(name) + ';"></span>' + name + '</span>';
+            });
+            c.innerHTML = html + '<div class="tl-legend">' + leg + '</div>';
+        }
+
+        function deleteRecord(id) {
+            if (confirm('删除这条记录？')) {
+                let records = getRecords();
+                records = records.filter(r => r.id !== id);
+                localStorage.setItem('timeline_records', JSON.stringify(records));
+                renderTimeline();
+                renderCalendar();
+            }
+        }
 
         /* Calendar */
         let calViewDate = new Date();
