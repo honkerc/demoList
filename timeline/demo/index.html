@@ -287,14 +287,14 @@
             -ms-touch-action: pan-x;
         }
 
-        /* Center reference line - wider & taller than any tick, acts as selection indicator */
+        /* Center reference line - same width as major tick, slightly taller */
         .picker-center-line {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 18px;
-            height: 130px;
+            width: 12px;
+            height: 70px;
             background: var(--picker-accent);
             border-radius: 999px;
             z-index: 15;
@@ -322,21 +322,21 @@
 
         .picker-ruler .tick {
             flex-shrink: 0;
-            width: 8px;
+            width: 6px;
             background: rgb(179, 174, 161);
             margin: 0 6px;
             position: relative;
             scroll-snap-align: center;
             transition: all 0.15s;
             border-radius: 999px;
-            height: 32px;
+            height: 30px;
             align-self: flex-start;
         }
 
         .picker-ruler .tick.major {
-            width: 12px;
+            width: 6px;
             background: rgb(179, 174, 161);
-            height: 52px;
+            height: 60px;
         }
 
         /* Label below major tick */
@@ -354,17 +354,17 @@
             line-height: 1;
         }
 
-        /* Selected tick - keep same style but center line is the visual indicator */
+        /* Selected tick - same size as normal, center line is the visual indicator */
         .picker-ruler .tick.selected {
-            width: 8px;
-            height: 32px;
+            width: 6px;
+            height: 30px;
             background: rgb(179, 174, 161);
             z-index: 10;
         }
 
         .picker-ruler .tick.major.selected {
-            width: 12px;
-            height: 52px;
+            width: 6px;
+            height: 60px;
         }
 
         .picker-ruler .tick.selected .tick-label {
