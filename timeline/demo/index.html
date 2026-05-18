@@ -495,7 +495,7 @@
             font-family: inherit;
             color: var(--text);
             cursor: pointer;
-            border-radius: 16px;
+            border-radius: 48px;
             transition: all 0.25s cubic-bezier(0.25, 0.1, 0.25, 1);
             text-align: left;
         }
@@ -520,40 +520,6 @@
         .drawer .drawer-options button.on .d,
         .drawer .drawer-options button:hover .d {
             background: #fff !important;
-        }
-
-        .drawer .drawer-new {
-            margin-top: 8px;
-        }
-
-        .drawer .drawer-new button {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px dashed var(--line);
-            background: none;
-            font-size: 15px;
-            font-weight: 800;
-            font-family: inherit;
-            color: var(--text3);
-            cursor: pointer;
-            border-radius: 16px;
-            transition: all 0.25s;
-            text-align: left;
-        }
-
-        .drawer .drawer-new button:hover {
-            border-color: var(--accent);
-            color: var(--accent);
-            background: color-mix(in srgb, var(--accent) 4%, transparent);
-        }
-
-        .drawer .drawer-new button .plus {
-            font-size: 18px;
-            font-weight: 900;
-            line-height: 1;
         }
 
         /* ===== Nav ===== */
@@ -649,11 +615,6 @@
             <div class="drawer-handle"></div>
             <div class="drawer-title">选择活动</div>
             <div class="drawer-options" id="drawerOptions"></div>
-            <div class="drawer-new">
-                <button onclick="addNewTag()">
-                    <span class="plus">+</span> 新建标签
-                </button>
-            </div>
         </div>
 
         <div class="nav">
@@ -726,6 +687,16 @@
             const container = document.getElementById('drawerOptions');
             const tags = getTags();
             container.innerHTML = '';
+            // Add "new tag" button as first item
+            const newBtn = document.createElement('button');
+            newBtn.innerHTML = '<span class="plus" style="font-size:18px;font-weight:900;line-height:1;color:var(--text3)">+</span> 新建标签';
+            newBtn.style.background = 'none';
+            newBtn.style.border = '2px dashed var(--line)';
+            newBtn.style.color = 'var(--text3)';
+            newBtn.onmouseenter = function () { this.style.borderColor = 'var(--accent)'; this.style.color = 'var(--accent)'; };
+            newBtn.onmouseleave = function () { this.style.borderColor = 'var(--line)'; this.style.color = 'var(--text3)'; };
+            newBtn.onclick = function () { addNewTag(); };
+            container.appendChild(newBtn);
             tags.forEach(o => {
                 const btn = document.createElement('button');
                 const isOn = o.name === currentTag;
