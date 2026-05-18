@@ -274,8 +274,9 @@
             background: color-mix(in srgb, var(--card) 88%, transparent);
             backdrop-filter: blur(24px);
             -webkit-backdrop-filter: blur(24px);
+            border-top: 1px solid var(--line);
             display: flex;
-            padding: 6px 16px 0;
+            padding: 6px 16px 24px;
             z-index: 100;
             gap: 2px
         }
@@ -311,8 +312,13 @@
             .app {
                 margin: 20px auto;
                 min-height: 90vh;
+                border-radius: 28px;
                 overflow: hidden;
                 box-shadow: var(--shadow-lg)
+            }
+
+            .nav {
+                border-radius: 0 0 28px 28px
             }
         }
     </style>
